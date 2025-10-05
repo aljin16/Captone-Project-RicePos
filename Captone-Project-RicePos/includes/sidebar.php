@@ -47,8 +47,10 @@ function nav_active($pageName, $activePage)
 <aside class="sidebar <?php if (!$isAdmin) { echo 'sidebar-staff'; } ?>">
     <div class="nav-brand">RicePOS</div>
     <div class="nav-links">
+        <?php if (!$isDeliveryStaff): ?>
         <a href="dashboard.php" class="<?php echo nav_active('dashboard.php', $activePage); ?>"><i class='bx bx-home'></i> <span class="nav-label">Dashboard</span></a>
         <a href="recent_sales.php" class="<?php echo nav_active('recent_sales.php', $activePage); ?>"><i class='bx bx-receipt'></i> <span class="nav-label">Recent Sales</span></a>
+        <?php endif; ?>
         <?php if ($isAdmin): ?>
             <a href="suppliers.php" class="<?php echo nav_active('suppliers.php', $activePage); ?>"><i class='bx bx-user-voice'></i> <span class="nav-label">Suppliers</span></a>
         <?php endif; ?>
@@ -76,7 +78,9 @@ function nav_active($pageName, $activePage)
             <a href="inventory_logs.php" class="<?php echo nav_active('inventory_logs.php', $activePage); ?>"><i class='bx bx-history'></i> <span class="nav-label">Activity Logs</span></a>
         <?php endif; ?>
         <?php if ($isDeliveryStaff): ?>
-            <a href="delivery_staff.php" class="<?php echo nav_active('delivery_staff.php', $activePage); ?>"><i class='bx bx-package'></i> <span class="nav-label">My Deliveries</span></a>
+            <a href="delivery_dashboard.php" class="<?php echo nav_active('delivery_dashboard.php', $activePage); ?>"><i class='bx bx-home'></i> <span class="nav-label">Delivery Dashboard</span></a>
+            <a href="delivery_staff.php" class="<?php echo nav_active('delivery_staff.php', $activePage); ?>"><i class='bx bx-list-ul'></i> <span class="nav-label">My Deliveries</span></a>
+            <a href="delivery_notifications.php" class="<?php echo nav_active('delivery_notifications.php', $activePage); ?>"><i class='bx bx-bell'></i> <span class="nav-label">Notifications</span></a>
         <?php elseif (!$isAdmin): ?>
             <a href="pos.php" class="<?php echo nav_active('pos.php', $activePage); ?>"><i class='bx bx-cart'></i> <span class="nav-label">POS</span></a>
             <a href="delivery.php" class="<?php echo nav_active('delivery.php', $activePage); ?>"><i class='bx bx-package'></i> <span class="nav-label">Delivery</span></a>

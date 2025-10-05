@@ -8,6 +8,12 @@ if (!$user->isLoggedIn()) {
     exit;
 }
 
+// Redirect delivery staff to their own dashboard
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'delivery_staff') {
+    header('Location: delivery_dashboard.php');
+    exit;
+}
+
 $pdo = Database::getInstance()->getConnection();
 
 // KPIs: total sales and transactions
