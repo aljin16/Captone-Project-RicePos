@@ -38,9 +38,9 @@ $pdo = Database::getInstance()->getConnection();
 // Handle status updates
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_delivery_status'])) {
-    // Only admin and staff can update statuses; others may view the page
-    if (!in_array($role, ['admin','staff'], true)) {
-        $message = 'Unauthorized: only admin or staff can update delivery status.';
+    // Only admin can update statuses; staff are view-only
+    if ($role !== 'admin') {
+        $message = 'Unauthorized: only admin can update delivery status.';
     } else {
         $deliveryId = (int)($_POST['delivery_id'] ?? 0);
         $newStatus = $_POST['status'] ?? '';
@@ -104,8 +104,68 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
     body { display: block; min-height: 100vh; margin: 0; background: #f4f6fb; overflow-x: hidden; }
     /* Rely on shared .main-content styles in assets/css/style.css for consistent layout */
     .main-content { background: #f4f6fb; min-height: 100vh; overflow-x: hidden; }
-    .filters { display:flex; gap:0.5rem; margin-bottom: 0.8rem; align-items:center; }
-    .filters input, .filters select { padding:0.5rem; border:1px solid #dbeafe; border-radius:6px; }
+    .filters { 
+        display: grid; 
+        grid-template-columns: auto 1fr auto; 
+        gap: 1.2rem; 
+        margin: 1.2rem 0; 
+        align-items: center; 
+        width: 100%;
+        padding: 0.5rem 0;
+    }
+    .filters input, .filters select { 
+        padding: 0.7rem 1rem; 
+        border: 1px solid #d1d5db; 
+        border-radius: 10px; 
+        background: #fff; 
+        font-size: 0.95rem; 
+        height: 44px;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+    }
+    .filters input:focus, .filters select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        outline: none;
+    }
+    .filters select { 
+        min-width: 200px; 
+        width: 200px; 
+        height : 50px;
+
+    }
+    .filters input[type="text"] { 
+        width: 100%; 
+        min-width: 350px; 
+        height : 50px;
+    }
+    .filters .btn { 
+        padding: 0.7rem 1.4rem; 
+        background: #3b82f6; 
+        color: #fff; 
+        border: none; 
+        border-radius: 10px; 
+        font-weight: 600; 
+        cursor: pointer; 
+        height: 44px;
+        white-space: nowrap;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+        font-size: 0.95rem;
+        height : 50px;
+    }
+    .filters .btn:hover { 
+        background: #2563eb; 
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    .filter-group { 
+        display: flex; 
+        align-items: center; 
+        gap: 0.6rem; 
+        white-space: nowrap;
+        height: 44px;
+    }
     .badge { display:inline-block; padding: 0.1rem 0.4rem; border-radius: 6px; font-size: 0.78rem; border:1px solid transparent; }
     .b-pending { background:#fee2e2; color:#991b1b; border-color:#fecaca; }
     .b-transit { background:#dbeafe; color:#1e40af; border-color:#bfdbfe; }
@@ -118,11 +178,12 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
      .table-card { background:#fff; border:1px solid #e5e7eb; border-radius:14px; box-shadow: 0 8px 24px rgba(17,24,39,0.06); overflow: hidden; }
      .table-scroll { overflow:auto; }
      .user-table { width:100%; border-collapse: separate; border-spacing:0; min-width: 920px; }
-     .user-table thead th { position: sticky; top:0; background: linear-gradient(180deg,#f8fafc 0%, #eef2ff 100%); color:#1f2937; font-weight:700; font-size:0.92rem; letter-spacing:0.3px; text-align:left; padding:0.85rem 0.9rem; border-bottom:1px solid #e5e7eb; }
+    .user-table thead th { position: sticky; top:0; background: linear-gradient(180deg,#f8fafc 0%, #eef2ff 100%); color:#1f2937; font-weight:800; font-size:0.95rem; letter-spacing:0.3px; text-align:left; padding:0.9rem 1rem; border-bottom:1px solid #e5e7eb; }
      .user-table thead th:first-child { border-top-left-radius: 14px; }
      .user-table thead th:last-child { border-top-right-radius: 14px; }
-     .user-table tbody td { padding:0.8rem 0.9rem; border-bottom:1px solid #eef2f7; color:#111827; background:#fff; }
-     .user-table tbody tr:hover td { background:#f9fbff; }
+    .user-table tbody td { padding:0.85rem 1rem; border-bottom:1px solid #eef2f7; color:#111827; background:#fff; vertical-align: top; }
+    .user-table tbody tr:nth-child(odd) td { background:#fcfdff; }
+    .user-table tbody tr:hover td { background:#f7fbff; }
      .user-table tbody tr:last-child td { border-bottom:none; }
      .user-table tbody td:nth-child(1) { color:#475569; font-variant-numeric: tabular-nums; }
      .user-table tbody td:nth-child(2) { color:#475569; }
@@ -367,13 +428,16 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
              </div>
         </div>
         <form method="get" class="filters">
-            <select name="status">
-                <option value="">All Statuses</option>
-                <option value="pending" <?php echo $statusFilter==='pending'?'selected':''; ?>>Pending</option>
-                <option value="out_for_delivery" <?php echo $statusFilter==='out_for_delivery'?'selected':''; ?>>In Transit</option>
-                <option value="delivered" <?php echo $statusFilter==='delivered'?'selected':''; ?>>Delivered</option>
-                <option value="cancelled" <?php echo $statusFilter==='cancelled'?'selected':''; ?>>Cancelled</option>
-            </select>
+            <div class="filter-group">
+                <label for="statusFilter" style="font-weight:700; color:#374151;">Status:</label>
+                <select name="status" id="statusFilter">
+                    <option value="">All Statuses</option>
+                    <option value="pending" <?php echo $statusFilter==='pending'?'selected':''; ?>>Pending</option>
+                    <option value="out_for_delivery" <?php echo $statusFilter==='out_for_delivery'?'selected':''; ?>>In Transit</option>
+                    <option value="delivered" <?php echo $statusFilter==='delivered'?'selected':''; ?>>Delivered</option>
+                    <option value="cancelled" <?php echo $statusFilter==='cancelled'?'selected':''; ?>>Cancelled</option>
+                </select>
+            </div>
             <input type="text" name="q" placeholder="Search by name, address or TXN" value="<?php echo htmlspecialchars($q); ?>">
             <button class="btn" type="submit">Filter</button>
         </form>
@@ -381,7 +445,7 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
         <div class="table-card">
           <div class="table-scroll">
         <table class="user-table">
-            <thead><tr><th>ID</th><th>Date</th><th>Transaction</th><th>Customer</th><th>Phone</th><th>Address</th><th>Notes</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead><tr><th>ID</th><th>Date</th><th>Transaction</th><th>Customer</th><th>Phone</th><th>Address</th><th>Notes</th><th>Total</th><th>Status</th><?php echo ($role==='admin')?'<th>Actions</th>':''; ?></tr></thead>
             <tbody>
             <?php foreach ($rows as $d): ?>
                 <tr>
@@ -399,6 +463,7 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
                         ?>
                         <span class="badge <?php echo $cls; ?>"><?php echo htmlspecialchars($d['status']); ?></span>
                     </td>
+                    <?php if ($role==='admin'): ?>
                     <td>
                         <form method="post" style="display:flex; gap:6px; align-items:center;">
                             <input type="hidden" name="delivery_id" value="<?php echo (int)$d['id']; ?>">
@@ -412,6 +477,7 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
                         </form>
                         <button class="btn" onclick="focusDelivery(<?php echo (int)$d['id']; ?>)"><i class='bx bx-map'></i> Route</button>
                     </td>
+                    <?php endif; ?>
                 </tr>
             <?php endforeach; ?>
             </tbody>

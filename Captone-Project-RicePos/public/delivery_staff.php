@@ -138,8 +138,8 @@ if ($q !== '') { $where[] = '(d.customer_name LIKE ? OR d.customer_address LIKE 
 $whereSql = $where ? ('WHERE '.implode(' AND ', $where)) : '';
 
 $sql = "SELECT d.id, d.customer_name, d.customer_phone, d.customer_address, d.notes, d.assigned_to, d.status, d.created_at, d.updated_at, d.picked_up_at, d.delivered_at, d.failed_reason, s.transaction_id, s.total_amount
-        FROM delivery_orders d
-        JOIN sales s ON s.id = d.sale_id
+                       FROM delivery_orders d
+                       JOIN sales s ON s.id = d.sale_id
         $whereSql
         ORDER BY d.created_at DESC";
 $stmt = $pdo->prepare($sql);
@@ -225,7 +225,7 @@ $rows = $stmt->fetchAll();
             <div class="view-toggle">
                 <button class="<?php echo $view==='mine'?'active':''; ?>" onclick="changeView('mine')">My Deliveries</button>
                 <button class="<?php echo $view==='all'?'active':''; ?>" onclick="changeView('all')">All Available</button>
-            </div>
+                </div>
             <form method="get" style="display:contents;">
                 <input type="hidden" name="view" value="<?php echo htmlspecialchars($view); ?>">
                 <select name="status" onchange="this.form.submit()">
@@ -238,7 +238,7 @@ $rows = $stmt->fetchAll();
                 </select>
                 <input type="text" name="q" placeholder="Search customer, address, or transaction..." value="<?php echo htmlspecialchars($q); ?>">
                 <button class="btn btn-primary" type="submit"><i class='bx bx-search'></i> Search</button>
-            </form>
+                </form>
         </div>
 
         <div class="delivery-grid">
@@ -380,8 +380,8 @@ $rows = $stmt->fetchAll();
                             <i class='bx bx-receipt'></i> View Receipt
                         </a>
                     </div>
-                </div>
-                <?php endforeach; ?>
+            </div>
+            <?php endforeach; ?>
             <?php else: ?>
                 <div class="empty-state">
                     <i class='bx bx-package'></i>
