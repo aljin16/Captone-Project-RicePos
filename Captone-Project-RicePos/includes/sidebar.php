@@ -33,8 +33,11 @@ function nav_active($pageName, $activePage)
     .nav-submenu.open{ display:flex; }
     .nav-submenu a{ padding-left:2.5rem; font-size:0.9rem; }
     .nav-parent{ cursor:pointer; position:relative; }
-    .nav-parent .nav-arrow{ position:absolute; right:1rem; top:50%; transform:translateY(-50%); transition:transform 0.2s ease; font-size:1.2rem; }
-    .nav-parent.open .nav-arrow{ transform:translateY(-50%) rotate(90deg); }
+    .nav-parent > a{ white-space: normal; overflow: visible; }
+    .nav-parent .nav-arrow{ display:inline-block; margin-left:0; margin-top:2px; width:12px; height:12px; border-right:3px solid rgba(255,255,255,0.95); border-bottom:3px solid rgba(255,255,255,0.95); transform: rotate(-45deg); transition: transform 0.22s ease; flex: 0 0 auto; color: #fff; align-self:flex-start; }
+    .nav-parent.open .nav-arrow{ transform: rotate(45deg); }
+    .nav-subcount{ display:inline-block; min-width:16px; height:16px; padding:0 6px; border-radius:999px; font-size:11px; font-weight:800; line-height:16px; background: rgba(255,255,255,0.14); color:#fff; margin-left:0.5rem; }
+    .nav-textcol{ display:flex; flex-direction:column; gap:4px; flex:1 1 auto; }
 </style>
 <aside class="sidebar">
     <div class="nav-brand">RicePOS</div>
@@ -46,17 +49,22 @@ function nav_active($pageName, $activePage)
         <?php endif; ?>
         <a href="inventory.php" class="<?php echo nav_active('inventory.php', $activePage); ?>"><i class='bx bx-box'></i> <span class="nav-label">Inventory</span></a>
         <?php if ($isAdmin): ?>
-            <div class="nav-parent <?php echo in_array($activePage, ['stock_in.php','stock_out.php','inventory_reports.php']) ? 'open' : ''; ?>" id="invMgmtParent">
-                <a href="javascript:void(0)" onclick="toggleSubmenu('invMgmt')">
+            <?php $invSubPages = ['stock_in.php','stock_out.php','inventory_reports.php']; $invOpen = in_array($activePage, $invSubPages); $invCount = count($invSubPages); ?>
+            <div class="nav-parent <?php echo $invOpen ? 'open' : ''; ?>" id="invMgmtParent">
+                <a href="javascript:void(0)" onclick="toggleSubmenu('invMgmt')" style="display:flex; align-items:center; gap:1rem;" aria-expanded="<?php echo $invOpen ? 'true' : 'false'; ?>" aria-controls="invMgmt" id="invMgmtToggle">
                     <i class='bx bx-cog'></i>
-                    <span class="nav-label">Inventory<br>Management</span>
-                    <i class='bx bx-chevron-right nav-arrow'></i>
+                    <span class="nav-textcol">
+                        <span>
+                            <span class="nav-label">Inventory<br>Management</span>
+                        </span>
+                        <span class="nav-arrow" aria-hidden="true"></span>
+                    </span>
                 </a>
             </div>
-            <div class="nav-submenu <?php echo in_array($activePage, ['stock_in.php','stock_out.php','inventory_reports.php']) ? 'open' : ''; ?>" id="invMgmt">
+            <div class="nav-submenu <?php echo $invOpen ? 'open' : ''; ?>" id="invMgmt">
                 <a href="stock_in.php" class="<?php echo nav_active('stock_in.php', $activePage); ?>"><i class='bx bx-download'></i> <span class="nav-label">Stock-In</span></a>
                 <a href="stock_out.php" class="<?php echo nav_active('stock_out.php', $activePage); ?>"><i class='bx bx-upload'></i> <span class="nav-label">Stock-Out</span></a>
-                <a href="inventory_reports.php" class="<?php echo nav_active('inventory_reports.php', $activePage); ?>"><i class='bx bx-bar-chart-square'></i> <span class="nav-label">Inventory Reports</span></a>
+                <a href="inventory_reports.php" class="<?php echo nav_active('inventory_reports.php', $activePage); ?>"><i class='bx bx-bar-chart-square'></i> <span class="nav-label">Inventory<br>Reports</span></a>
             </div>
             <a href="inventory_logs.php" class="<?php echo nav_active('inventory_logs.php', $activePage); ?>"><i class='bx bx-history'></i> <span class="nav-label">Activity Logs</span></a>
         <?php endif; ?>
@@ -77,9 +85,14 @@ function nav_active($pageName, $activePage)
 function toggleSubmenu(id) {
     const submenu = document.getElementById(id);
     const parent = document.getElementById(id + 'Parent');
+    const toggle = document.getElementById(id + 'Toggle');
     if (submenu && parent) {
         submenu.classList.toggle('open');
         parent.classList.toggle('open');
+        if (toggle) {
+            const expanded = toggle.getAttribute('aria-expanded') === 'true';
+            toggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+        }
     }
 }
 </script>
