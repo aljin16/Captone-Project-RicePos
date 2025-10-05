@@ -116,6 +116,19 @@ if (isset($pageTitle) && trim((string)$pageTitle) !== '') {
         .logout-btn { border:1px solid #ef4444; color:#ef4444; background:rgba(255,255,255,0.9); border-radius:10px; padding:8px 12px; font-weight:600; display:inline-flex; align-items:center; gap:6px; font-size: 0.85rem; transition: all 0.2s ease; }
         .logout-btn:hover { background:#fef2f2; }
     </style>
+    <?php if ((isset($_SESSION['role']) ? $_SESSION['role'] : '') !== 'admin'): ?>
+    <style>
+        /* Staff: lock sidebar and layout sizing; prevent responsive shifts */
+        .sidebar { width: var(--sidebar-width) !important; min-width: var(--sidebar-width) !important; max-width: var(--sidebar-width) !important; flex: 0 0 var(--sidebar-width) !important; position: fixed !important; }
+        .app-header { left: var(--sidebar-width) !important; width: calc(100% - var(--sidebar-width)) !important; }
+        .main-content { margin-left: var(--sidebar-width) !important; }
+        @media (max-width: 700px) {
+            .sidebar { width: var(--sidebar-width) !important; flex: 0 0 var(--sidebar-width) !important; }
+            .app-header { left: var(--sidebar-width) !important; width: calc(100% - var(--sidebar-width)) !important; }
+            .main-content { margin-left: var(--sidebar-width) !important; }
+        }
+    </style>
+    <?php endif; ?>
     <script>
     (function(){
         <?php if (!($__isAdmin ?? false)) { echo 'return;'; } ?>

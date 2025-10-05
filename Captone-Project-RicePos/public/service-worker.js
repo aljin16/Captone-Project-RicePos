@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ricepos-cache-v10';
+const CACHE_NAME = 'ricepos-cache-v11';
 const CORE_ASSETS = [
   './',
   './index.php',

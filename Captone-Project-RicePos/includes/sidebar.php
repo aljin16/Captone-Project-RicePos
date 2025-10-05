@@ -38,8 +38,9 @@ function nav_active($pageName, $activePage)
     .nav-parent.open .nav-arrow{ transform: rotate(45deg); }
     .nav-subcount{ display:inline-block; min-width:16px; height:16px; padding:0 6px; border-radius:999px; font-size:11px; font-weight:800; line-height:16px; background: rgba(255,255,255,0.14); color:#fff; margin-left:0.5rem; }
     .nav-textcol{ display:flex; flex-direction:column; gap:4px; flex:1 1 auto; }
+    .sidebar-staff .nav-links { justify-content: space-evenly; flex-grow: 1; }
 </style>
-<aside class="sidebar">
+<aside class="sidebar <?php if (!$isAdmin) { echo 'sidebar-staff'; } ?>">
     <div class="nav-brand">RicePOS</div>
     <div class="nav-links">
         <a href="dashboard.php" class="<?php echo nav_active('dashboard.php', $activePage); ?>"><i class='bx bx-home'></i> <span class="nav-label">Dashboard</span></a>

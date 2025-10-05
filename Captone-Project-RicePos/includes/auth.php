@@ -40,6 +40,30 @@ function require_admin() {
     }
 }
 
+// Role helpers for staff accounts
+function is_sales_staff() {
+    return isset($_SESSION['role']) && $_SESSION['role'] === 'sales_staff';
+}
+
+function is_delivery_staff() {
+    return isset($_SESSION['role']) && $_SESSION['role'] === 'delivery_staff';
+}
+
+function require_role($role) {
+    if (!isset($_SESSION['role']) || $_SESSION['role'] !== $role) {
+        header('Location: dashboard.php');
+        exit;
+    }
+}
+
+function require_sales_staff() {
+    require_role('sales_staff');
+}
+
+function require_delivery_staff() {
+    require_role('delivery_staff');
+}
+
 function logout() {
     session_unset();
     session_destroy();
