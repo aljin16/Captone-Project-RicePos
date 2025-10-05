@@ -26,7 +26,7 @@ A modern web-based Point of Sale (POS) system with admin and staff roles, invent
 first : import the database named: ricepos
 database filename: ricepos.sql
 
-1) Opening this system:  http://localhost/public/RicePos/public/index.php
+1) Opening this system:  http://localhost/RicePos/Captone-Project-RicePos/public/
 
 2) FOR Location sharing device use of Rider(Edgar)
 

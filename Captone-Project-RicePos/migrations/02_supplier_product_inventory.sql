@@ -33,3 +33,20 @@ CREATE TABLE IF NOT EXISTS inventorylog (
     FOREIGN KEY (product_id) REFERENCES product(product_id),
     FOREIGN KEY (user_id) REFERENCES user(user_id)
 ); 
+
+-- Stock movements table for Stock-In/Out recording (sacks only)
+CREATE TABLE IF NOT EXISTS stock_movements (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    movement_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    product_id INT NOT NULL,
+    user_id INT NULL,
+    type ENUM('in','out') NOT NULL,
+    quantity_sack DECIMAL(10,2) NOT NULL,
+    supplier VARCHAR(150) NULL,
+    reference_no VARCHAR(100) NULL,
+    reason VARCHAR(100) NULL,
+    notes TEXT NULL,
+    INDEX idx_product_date (product_id, movement_date),
+    INDEX idx_type_date (type, movement_date)
+);

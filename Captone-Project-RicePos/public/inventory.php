@@ -114,9 +114,15 @@ if ($is_admin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_a
     .main-content { background: var(--bg); min-height: 100vh; overflow-x: hidden; }
     .main-content h2{ margin:0 0 1rem; font-weight:800; letter-spacing:0.2px; color: var(--ink); }
     @media (max-width: 700px) { .main-content { padding: 1.2rem 0.5rem 1.2rem 0.5rem; } }
-    .product-card { box-shadow: 0 8px 24px rgba(45,108,223,0.12), 0 1px 0 rgba(255,255,255,0.5) !important; border-radius: 16px !important; overflow: hidden !important; background: var(--card) !important; border:1px solid var(--line) !important; transition: box-shadow 0.25s cubic-bezier(.4,2,.6,1), transform 0.18s cubic-bezier(.4,2,.6,1) !important; }
-    .product-card:hover { box-shadow: 0 16px 40px rgba(44,108,223,0.22), 0 6px 20px rgba(44,108,223,0.13) !important; transform: translateY(-6px) scale(1.025); }
-    .product-img { width: 120px !important; height: 120px !important; object-fit: cover !important; background: #f8fafc !important; border-radius: 12px !important; display: block !important; margin-left: auto !important; margin-right: auto !important; box-shadow: 0 4px 16px rgba(44,108,223,0.12) !important; }
+    /* Inventory Grid */
+    .inventory-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 1rem; align-items: stretch; }
+    @media (min-width: 1600px){ .inventory-grid{ grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 1.2rem; } }
+    @media (max-width: 520px){ .inventory-grid{ grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 0.8rem; } }
+
+    /* Product card */
+    .product-card { border-radius: 14px !important; background: var(--card) !important; border:1px solid var(--line) !important; box-shadow: 0 6px 18px rgba(17,24,39,0.08) !important; transition: box-shadow .2s ease, transform .15s ease !important; }
+    .product-card:hover { box-shadow: 0 12px 28px rgba(17,24,39,0.14) !important; transform: translateY(-4px); }
+    .product-img { width: 140px !important; height: 140px !important; object-fit: cover !important; background: #f8fafc !important; border-radius: 12px !important; display: block !important; margin-left: auto !important; margin-right: auto !important; box-shadow: 0 2px 8px rgba(44,108,223,0.12) !important; }
     .stock-indicator { font-size: 0.98em; }
     .stock-indicator.green { color: #22c55e; }
     .stock-indicator.red { color: #ef4444; }
@@ -133,6 +139,13 @@ if ($is_admin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_a
     .status-pill.hidden { background: #f3f4f6; color: #374151; border-color: #e5e7eb; }
     .btn-toggle { padding: 0.35rem 0.7rem; background: linear-gradient(135deg,#2d6cdf,#1e4fa3); color:#fff; border:1px solid #1e40af; border-radius:8px; font-weight:600; }
     .btn-toggle:hover { background: linear-gradient(135deg,#1e4fa3,#1e40af); color:#fff; }
+    .btn-toggle { white-space: nowrap; }
+    .actions-primary{ display:flex; align-items:center; gap: 0.5rem; flex-wrap: wrap; }
+    .actions-secondary{ display:flex; align-items:center; gap: 0.5rem; flex-wrap: wrap; }
+    .product-card .title{ font-weight: 800; letter-spacing: .2px; margin-bottom: 2px; }
+    .product-card .meta{ font-size:.9rem; color:#64748b; }
+    .product-card .price{ font-weight:700; }
+    .product-card .section{ margin-top:.25rem; }
     </style>
 </head>
 <body>
@@ -203,21 +216,21 @@ if ($is_admin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_a
             </div>
         </div>
         <?php endif; ?>
-        <div class="row g-4">
+        <div class="inventory-grid">
             <?php foreach ($products as $p):
                 $img = !empty($p['image']) ? $p['image'] : 'assets/img/sack-placeholder.png';
                 $stock = $p['stock_sack'];
                 $stock_class = $stock > $p['low_stock_threshold'] ? 'green' : ($stock > 0 ? 'orange' : 'red');
             ?>
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div>
                 <div class="product-card p-3 h-100 d-flex flex-column justify-content-between">
                     <img src="<?php echo htmlspecialchars($img, ENT_QUOTES); ?>" class="product-img mb-2" alt="Rice Sack">
-                    <div class="fw-bold mb-1"><?php echo htmlspecialchars($p['name']); ?></div>
-                    <div class="mb-1 text-muted">Sack Size: <?php echo htmlspecialchars($p['category']); ?></div>
-                     <div class="mb-1">Price per Sack: <span class="fw-semibold"> ₱<?php echo number_format($p['price_per_sack'] ?? 0,0); ?></span></div>
-                     <?php if ($is_admin): ?>
-                     <div class="mb-1 text-muted">Profit per Sack: <span class="fw-semibold">₱<?php echo number_format($p['profit_per_sack'] ?? 0,0); ?></span></div>
-                     <?php endif; ?>
+                    <div class="title"><?php echo htmlspecialchars($p['name']); ?></div>
+                    <div class="meta">Sack Size: <?php echo htmlspecialchars($p['category']); ?></div>
+                    <div class="section">Price per Sack: <span class="price">₱<?php echo number_format($p['price_per_sack'] ?? 0,0); ?></span></div>
+                    <?php if ($is_admin): ?>
+                    <div class="meta">Profit per Sack: <span class="price">₱<?php echo number_format($p['profit_per_sack'] ?? 0,0); ?></span></div>
+                    <?php endif; ?>
                     <div class="stock-indicator <?php echo $stock_class; ?>">
                         <?php if ($stock > $p['low_stock_threshold']): ?>
                             <span style="color: #22c55e;">🟢 In stock: <?php echo $stock; ?> sacks</span>
@@ -227,7 +240,7 @@ if ($is_admin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_a
                             <span style="color: #ef4444;">🔴 Out of stock</span>
                         <?php endif; ?>
                     </div>
-                    <div class="mt-2 d-flex gap-2 align-items-center">
+                    <div class="section actions-primary">
                         <?php $active = isset($p['is_active']) ? (int)$p['is_active'] : 1; ?>
                         <span class="status-pill <?php echo $active ? 'active' : 'hidden'; ?>"><?php echo $active ? 'Active' : 'Hidden'; ?></span>
                         <form method="post" class="toggle-form" data-active="<?php echo $active; ?>" data-stock="<?php echo (int)$p['stock_sack']; ?>">
@@ -235,10 +248,14 @@ if ($is_admin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_a
                             <input type="hidden" name="toggle_active" value="1">
                             <button type="submit" class="btn btn-toggle btn-sm"><?php echo $active ? 'Hide in POS' : 'Activate'; ?></button>
                         </form>
-                        <?php if ($is_admin): ?>
-                        <a href="inventory.php?edit=<?php echo $p['id']; ?>" class="btn btn-sm btn-primary"><i class='bx bx-edit'></i> Edit</a>
-                        <?php endif; ?>
                     </div>
+                    <?php if ($is_admin): ?>
+                    <div class="section actions-secondary">
+                        <a href="inventory.php?edit=<?php echo $p['id']; ?>" class="btn btn-sm btn-primary" style="white-space:nowrap;"><i class='bx bx-edit'></i> Edit</a>
+                        <a href="stock_in.php" class="btn btn-sm btn-success" style="white-space:nowrap;"><i class='bx bx-download'></i> Stock-In</a>
+                        <a href="stock_out.php" class="btn btn-sm btn-danger" style="white-space:nowrap;"><i class='bx bx-upload'></i> Stock-Out</a>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
             <?php endforeach; ?>
