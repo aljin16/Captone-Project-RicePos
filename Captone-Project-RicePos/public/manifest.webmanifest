@@ -1,0 +1,27 @@
+{
+  "name": "RicePOS",
+  "short_name": "RicePOS",
+  "id": "ricepos-app-v10",
+  "description": "Cedric's Grain Center - Rice Point of Sale",
+  "start_url": "index.php",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2d6cdf",
+  "lang": "en",
+  "icons": [
+    { "src": "pwa-icon.php?size=192&v=10", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "pwa-icon.php?size=256&v=10", "sizes": "256x256", "type": "image/png", "purpose": "any" },
+    { "src": "pwa-icon.php?size=384&v=10", "sizes": "384x384", "type": "image/png", "purpose": "any" },
+    { "src": "pwa-icon.php?size=512&v=10", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ],
+  "screenshots": [
+    { "src": "assets/img/cloudy.png", "sizes": "800x600", "type": "image/png", "form_factor": "wide" }
+  ],
+  "shortcuts": [
+    { "name": "Dashboard", "short_name": "Dashboard", "url": "dashboard.php" },
+    { "name": "POS", "short_name": "POS", "url": "pos.php" },
+    { "name": "Inventory", "short_name": "Inventory", "url": "inventory.php" }
+  ]
+}
+
