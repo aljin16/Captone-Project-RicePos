@@ -119,22 +119,7 @@ $topStmt = $pdo->query("SELECT p.name, SUM(si.price) as revenue
                         LIMIT 5");
 $topRows = $topStmt->fetchAll();
 
-// Staff performance for a selected day (default: today)
-$perfDate = isset($_GET['perf_date']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['perf_date']) ? $_GET['perf_date'] : date('Y-m-d');
-$perfStmt = $pdo->prepare("SELECT u.username, MIN(s.datetime) AS time_in, MAX(s.datetime) AS time_out, SUM(s.total_amount) AS total_sales
-                           FROM sales s
-                           JOIN users u ON u.id = s.user_id
-                           WHERE DATE(s.datetime) = ?
-                           GROUP BY u.id, u.username
-                           ORDER BY total_sales DESC");
-$perfStmt->execute([$perfDate]);
-$perfRows = $perfStmt->fetchAll();
-// Build last 7 day chips for quick filter
-$perfDayChips = [];
-for ($i = 0; $i < 7; $i++) {
-    $d = date('Y-m-d', strtotime("-{$i} day"));
-    $perfDayChips[] = [ 'date' => $d, 'label' => date('M d', strtotime($d)) ];
-}
+// Staff performance removed to streamline dashboard
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -155,10 +140,14 @@ for ($i = 0; $i < 7; $i++) {
     *,*::before,*::after{ box-sizing:border-box; }
     html,body{ height:100%; }
     body { display: block; min-height: 100vh; margin: 0; background: var(--bg); color: var(--ink); overflow-x:hidden; }
-    @media (max-width: 700px) { .main-content { padding: 1.2rem 0.5rem 1.2rem 0.5rem; } }
+    @media (max-width: 700px) { 
+        .main-content { padding: 1.2rem 0.5rem 1.2rem 0.5rem; } 
+        .section-grid { grid-template-columns: 1fr; gap: 0.6rem; }
+        .kpi-grid { grid-template-columns: 1fr; gap: 0.6rem; }
+    }
 
     /* DSS styles */
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.8rem; margin-bottom: 0.8rem; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.6rem; margin-bottom: 0.6rem; align-items: stretch; }
     .kpi-card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.04); transition: transform 0.2s ease, box-shadow 0.2s ease; }
     .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
     .kpi-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
@@ -170,34 +159,26 @@ for ($i = 0; $i < 7; $i++) {
     .kpi-sales { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-color: #bae6fd; }
     .kpi-sales .kpi-icon { background: #0ea5e9; color: white; }
     
-    .kpi-transactions { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-color: #bbf7d0; }
-    .kpi-transactions .kpi-icon { background: #22c55e; color: white; }
-    
-    .kpi-today { background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%); border-color: #fde68a; }
-    .kpi-today .kpi-icon { background: #f59e0b; color: white; }
-    
-    .kpi-week { background: linear-gradient(135deg, #fdf4ff 0%, #f3e8ff 100%); border-color: #e9d5ff; }
-    .kpi-week .kpi-icon { background: #a855f7; color: white; }
-    
-    .kpi-month { background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-color: #fecaca; }
-    .kpi-month .kpi-icon { background: #ef4444; color: white; }
+    .kpi-summary { background: linear-gradient(135deg, #fefce8 0%, #e0f2fe 100%); border-color: #fde68a; }
+    .kpi-summary .kpi-icon { background: linear-gradient(135deg,#f59e0b,#2563eb); color: white; }
     
     .kpi-deliveries { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-color: #e2e8f0; }
     .kpi-deliveries .kpi-icon { background: #64748b; color: white; }
-    .section-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 0.8rem; }
+    .section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.6rem; margin-bottom: 0.6rem; align-items: start; }
+    .left-col { display:flex; flex-direction:column; gap:0.6rem; }
+    .left-subgrid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.6rem; }
     .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
     .card h4 { margin: 0 0 0.5rem 0; font-size: 1.05rem; }
     .list { list-style: none; padding:0; margin:0; }
     .list li { display:flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px dashed #e5e7eb; }
     .list li:last-child { border-bottom: none; }
     .muted { color:#6b7280; }
-    .chips { display:flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.45rem; }
-    .chip { display:inline-flex; align-items:center; gap:0.4rem; padding:0.35rem 0.6rem; border-radius:999px; font-weight:600; font-size:0.85rem; border:1px solid var(--line); background:#f8fafc; }
+    .chips { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.35rem; margin-top: 0.3rem; }
+    .chip { display:inline-flex; align-items:center; gap:0.35rem; padding:0.28rem 0.5rem; border-radius:999px; font-weight:600; font-size:0.82rem; border:1px solid var(--line); background:#f8fafc; }
     .chip .icon { display:inline-flex; width:18px; height:18px; align-items:center; justify-content:center; border-radius:50%; color:#fff; font-size:12px; }
     .chip.up .icon { background:#16a34a; }
     .chip.down .icon { background:#dc2626; }
     .chip.neutral .icon { background:#2563eb; }
-    .spark-wrap { margin-top: 0.6rem; background:#f8fafc; border:1px solid var(--line); border-radius:10px; padding: 0.4rem 0.6rem; }
     /* Staff performance panel */
     .perf-card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding: 0.75rem; margin-top: 0.8rem; }
     .perf-head { display:flex; align-items:center; justify-content: space-between; gap:0.5rem; margin-bottom:0.5rem; }
@@ -220,33 +201,16 @@ for ($i = 0; $i < 7; $i++) {
     <main class="main-content" id="main-content">
         
         <div class="kpi-grid">
-            <div class="kpi-card kpi-transactions">
+            <div class="kpi-card kpi-summary">
                 <div class="kpi-header">
-                    <div class="kpi-icon"><i class='bx bx-receipt'></i></div>
-                    <div class="kpi-title">Transactions</div>
+                    <div class="kpi-icon"><i class='bx bx-calendar-star'></i></div>
+                    <div class="kpi-title">Sales Summary</div>
                 </div>
-                <div class="kpi-value"><?php echo (int)$totals['txn_count']; ?></div>
-            </div>
-            <div class="kpi-card kpi-today">
-                <div class="kpi-header">
-                    <div class="kpi-icon"><i class='bx bx-calendar-check'></i></div>
-                    <div class="kpi-title">Today</div>
+                <div class="kpi-value" style="font-size:1.05rem; line-height:1.6;">
+                    <div>Today: <strong>₱<?php echo number_format((float)$daily['total'], 2); ?></strong> <span class="muted">(<?php echo (int)$daily['txns']; ?>)</span></div>
+                    <div>This Week: <strong>₱<?php echo number_format((float)$weekly['total'], 2); ?></strong> <span class="muted">(<?php echo (int)$weekly['txns']; ?>)</span></div>
+                    <div>This Month: <strong>₱<?php echo number_format((float)$monthly['total'], 2); ?></strong> <span class="muted">(<?php echo (int)$monthly['txns']; ?>)</span></div>
                 </div>
-                <div class="kpi-value">₱<?php echo number_format((float)$daily['total'], 2); ?> <span class="muted">(<?php echo (int)$daily['txns']; ?> txns)</span></div>
-            </div>
-            <div class="kpi-card kpi-week">
-                <div class="kpi-header">
-                    <div class="kpi-icon"><i class='bx bx-calendar-week'></i></div>
-                    <div class="kpi-title">This Week</div>
-                </div>
-                <div class="kpi-value">₱<?php echo number_format((float)$weekly['total'], 2); ?> <span class="muted">(<?php echo (int)$weekly['txns']; ?> txns)</span></div>
-            </div>
-            <div class="kpi-card kpi-month">
-                <div class="kpi-header">
-                    <div class="kpi-icon"><i class='bx bx-calendar'></i></div>
-                    <div class="kpi-title">This Month</div>
-                </div>
-                <div class="kpi-value">₱<?php echo number_format((float)$monthly['total'], 2); ?> <span class="muted">(<?php echo (int)$monthly['txns']; ?> txns)</span></div>
             </div>
             <div class="kpi-card kpi-deliveries">
                 <div class="kpi-header">
@@ -262,7 +226,8 @@ for ($i = 0; $i < 7; $i++) {
         </div>
 
         <div class="section-grid">
-            <div class="card">
+            <div class="left-col">
+                <div class="card">
                 <h4>Sales Trend (Last 30 Days)</h4>
                 <canvas id="trendChart" height="140"></canvas>
                 <div style="margin-top:0.5rem;">
@@ -276,53 +241,29 @@ for ($i = 0; $i < 7; $i++) {
                         <span class="chip neutral"><span class="icon">Ø</span> Avg30: ₱<?php echo number_format($avg30,0); ?></span>
                         <span class="chip neutral"><span class="icon">→</span> Proj <?php echo date('M'); ?>: ₱<?php echo number_format($projMonth,0); ?></span>
                     </div>
-                    <div class="spark-wrap">
-                        <canvas id="sparkChart" height="40"></canvas>
+                </div>
+                </div>
+                <div class="left-subgrid">
+                    <div class="card">
+                        <h4>Top 5 Best-selling Items (30 Days)</h4>
+                        <ul class="list">
+                        <?php foreach ($topRows as $row): ?>
+                            <li>
+                                <span><?php echo htmlspecialchars($row['name']); ?></span>
+                                <span><strong>₱<?php echo number_format((float)$row['revenue'], 2); ?></strong></span>
+                            </li>
+                        <?php endforeach; ?>
+                        </ul>
                     </div>
-                    <!-- Staff Performance Panel (fills space below sparkline) -->
-                    <div class="perf-card">
-                        <div class="perf-head">
-                            <h5 class="perf-title">Staff Performance (<?php echo htmlspecialchars(date('M d, Y', strtotime($perfDate))); ?>)</h5>
-                            <div class="perf-date-chips" id="perfDateChips">
-                                <?php foreach ($perfDayChips as $chip): $isActive = ($chip['date'] === $perfDate); ?>
-                                    <a class="perf-chip <?php echo $isActive ? 'active' : ''; ?>" href="?perf_date=<?php echo $chip['date']; ?>#main-content"><?php echo htmlspecialchars($chip['label']); ?></a>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                        <div class="table-wrap">
-                            <table class="perf-table">
-                                <thead>
-                                    <tr>
-                                        <th>User</th>
-                                        <th>Total Sales</th>
-                                        <th>Time In</th>
-                                        <th>Time Out</th>
-                                        <th>Duration</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if ($perfRows): foreach ($perfRows as $r): 
-                                        $tIn = $r['time_in'] ? date('H:i', strtotime($r['time_in'])) : '—';
-                                        $tOut = $r['time_out'] ? date('H:i', strtotime($r['time_out'])) : '—';
-                                        $durMin = 0;
-                                        if ($r['time_in'] && $r['time_out']) {
-                                            $durMin = max(0, (strtotime($r['time_out']) - strtotime($r['time_in'])) / 60);
-                                        }
-                                        $dur = $durMin ? (floor($durMin/60).'h '.str_pad((int)($durMin%60),2,'0',STR_PAD_LEFT).'m') : '—';
-                                    ?>
-                                        <tr>
-                                            <td><span class="pill">@<?php echo htmlspecialchars($r['username']); ?></span></td>
-                                            <td><strong>₱<?php echo number_format((float)$r['total_sales'], 2); ?></strong></td>
-                                            <td><?php echo $tIn; ?></td>
-                                            <td><?php echo $tOut; ?></td>
-                                            <td><?php echo $dur; ?></td>
-                                        </tr>
-                                    <?php endforeach; else: ?>
-                                        <tr><td colspan="5" class="muted">No sales recorded for this day.</td></tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="card">
+                        <h4>Operational Alerts</h4>
+                        <ul class="list">
+                            <li><span>Out of stock items</span><span><strong><?php echo (int)$risk['zero']; ?></strong></span></li>
+                            <li><span>Low stock (≤ threshold)</span><span><strong><?php echo (int)$risk['low']; ?></strong></span></li>
+                            <li><span>Pending Deliveries</span><span><strong><?php echo (int)$deliveryCounts['pending']; ?></strong></span></li>
+                        </ul>
+                        <canvas id="opsChart" height="130" style="margin-top:0.4rem;"></canvas>
+                        <div class="muted" style="margin-top:0.4rem;">Address alerts to avoid lost sales and delays.</div>
                     </div>
                 </div>
             </div>
@@ -340,8 +281,8 @@ for ($i = 0; $i < 7; $i++) {
                         ?>
                     </div>
                 </div>
-                <canvas id="productChart" height="160"></canvas>
-                <div class="muted" style="margin-top:0.5rem;">
+                <canvas id="productChart" height="130"></canvas>
+                <div class="muted" style="margin-top:0.3rem;">
                     <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
                         Double‑ring: Outer = Revenue • Inner = Gross Profit.
                     <?php else: ?>
@@ -349,7 +290,7 @@ for ($i = 0; $i < 7; $i++) {
                     <?php endif; ?>
                 </div>
                 <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                <div style="margin-top:0.4rem;display:flex;gap:0.8rem;align-items:center;flex-wrap:wrap;">
+                <div style="margin-top:0.35rem;display:flex;gap:0.6rem;align-items:center;flex-wrap:wrap;">
                     <span style="display:inline-flex;align-items:center;gap:6px;">
                         <span style="width:12px;height:12px;border-radius:2px;background:#93c5fd;display:inline-block;border:1px solid #60a5fa;"></span>
                         <span>Revenue (outer)</span>
@@ -362,33 +303,7 @@ for ($i = 0; $i < 7; $i++) {
                 <?php endif; ?>
             </div>
         </div>
-
-        <div class="section-grid" style="grid-template-columns: 1.3fr 1fr; margin-top:1rem;">
-            <div class="card">
-                <h4>Top 5 Best-selling Items (30 Days)</h4>
-                <ul class="list">
-                <?php foreach ($topRows as $row): ?>
-                    <li>
-                        <span><?php echo htmlspecialchars($row['name']); ?></span>
-                        <span><strong>₱<?php echo number_format((float)$row['revenue'], 2); ?></strong></span>
-                    </li>
-                <?php endforeach; ?>
-                </ul>
-            </div>
-            <div class="card">
-                <h4>Operational Alerts</h4>
-                <ul class="list">
-                    <li><span>Out of stock items</span><span><strong><?php echo (int)$risk['zero']; ?></strong></span></li>
-                    <li><span>Low stock (≤ threshold)</span><span><strong><?php echo (int)$risk['low']; ?></strong></span></li>
-                    <li><span>Pending Deliveries</span><span><strong><?php echo (int)$deliveryCounts['pending']; ?></strong></span></li>
-                </ul>
-                <canvas id="opsChart" height="130" style="margin-top:0.4rem;"></canvas>
-                <div class="muted" style="margin-top:0.4rem;">Address alerts to avoid lost sales and delays.</div>
-            </div>
-        </div>
-
-
-
+        
         
     </main>
     <script>
@@ -541,15 +456,6 @@ for ($i = 0; $i < 7; $i++) {
         });
     }
 
-    // Sparkline for DSS (last 30 days)
-    const sparkCtx = document.getElementById('sparkChart');
-    if (sparkCtx) {
-        new Chart(sparkCtx, {
-            type: 'line',
-            data: { labels: dates, datasets: [{ data: values, borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,0.08)', tension:0.35, pointRadius:0, fill:true }] },
-            options: { responsive:true, plugins:{ legend:{ display:false }, tooltip:{ enabled:false } }, scales:{ x:{ display:false }, y:{ display:false } } }
-        });
-    }
     </script>
     <script src="assets/js/main.js"></script>
 </body>

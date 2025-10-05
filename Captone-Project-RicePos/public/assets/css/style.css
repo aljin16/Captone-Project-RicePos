@@ -244,7 +244,7 @@ body {
     backdrop-filter: none;
 }
 /* Make each nav item take equal height to fill sidebar */
-.sidebar .nav-links > a { flex: 1 1 0; min-height: 44px; }
+.sidebar .nav-links > a { flex: 0 0 auto; min-height: 44px; }
 /* Multi-line label support for long names */
 .sidebar .nav-links a .nav-label { display: inline-block; line-height: 1.05; }
 .sidebar .nav-links a i { 
