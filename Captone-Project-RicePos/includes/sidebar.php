@@ -20,6 +20,10 @@ if (function_exists('is_admin')) {
     }
 }
 
+// Get role for delivery_staff detection
+$userRole = isset($_SESSION['role']) ? $_SESSION['role'] : '';
+$isDeliveryStaff = ($userRole === 'delivery_staff');
+
 // Helper to mark active link
 function nav_active($pageName, $activePage)
 {
@@ -48,7 +52,9 @@ function nav_active($pageName, $activePage)
         <?php if ($isAdmin): ?>
             <a href="suppliers.php" class="<?php echo nav_active('suppliers.php', $activePage); ?>"><i class='bx bx-user-voice'></i> <span class="nav-label">Suppliers</span></a>
         <?php endif; ?>
-        <a href="inventory.php" class="<?php echo nav_active('inventory.php', $activePage); ?>"><i class='bx bx-box'></i> <span class="nav-label">Inventory</span></a>
+        <?php if (!$isDeliveryStaff): ?>
+            <a href="inventory.php" class="<?php echo nav_active('inventory.php', $activePage); ?>"><i class='bx bx-box'></i> <span class="nav-label">Inventory</span></a>
+        <?php endif; ?>
         <?php if ($isAdmin): ?>
             <?php $invSubPages = ['stock_in.php','stock_out.php','inventory_reports.php']; $invOpen = in_array($activePage, $invSubPages); $invCount = count($invSubPages); ?>
             <div class="nav-parent <?php echo $invOpen ? 'open' : ''; ?>" id="invMgmtParent">
@@ -69,14 +75,18 @@ function nav_active($pageName, $activePage)
             </div>
             <a href="inventory_logs.php" class="<?php echo nav_active('inventory_logs.php', $activePage); ?>"><i class='bx bx-history'></i> <span class="nav-label">Activity Logs</span></a>
         <?php endif; ?>
-        <?php if (!$isAdmin): ?>
+        <?php if ($isDeliveryStaff): ?>
+            <a href="delivery_staff.php" class="<?php echo nav_active('delivery_staff.php', $activePage); ?>"><i class='bx bx-package'></i> <span class="nav-label">My Deliveries</span></a>
+        <?php elseif (!$isAdmin): ?>
             <a href="pos.php" class="<?php echo nav_active('pos.php', $activePage); ?>"><i class='bx bx-cart'></i> <span class="nav-label">POS</span></a>
             <a href="delivery.php" class="<?php echo nav_active('delivery.php', $activePage); ?>"><i class='bx bx-package'></i> <span class="nav-label">Delivery</span></a>
         <?php endif; ?>
-        <a href="delivery_management.php" class="<?php echo nav_active('delivery_management.php', $activePage); ?>">
-            <i class='bx bx-notepad'></i>
-            <span class="nav-label">Delivery<br>Management</span>
-        </a>
+        <?php if (!$isDeliveryStaff): ?>
+            <a href="delivery_management.php" class="<?php echo nav_active('delivery_management.php', $activePage); ?>">
+                <i class='bx bx-notepad'></i>
+                <span class="nav-label">Delivery<br>Management</span>
+            </a>
+        <?php endif; ?>
         <?php if ($isAdmin): ?>
             <a href="users.php" class="<?php echo nav_active('users.php', $activePage); ?>"><i class='bx bx-group'></i> <span class="nav-label">Users</span></a>
         <?php endif; ?>

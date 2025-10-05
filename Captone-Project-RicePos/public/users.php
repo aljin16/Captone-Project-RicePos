@@ -16,7 +16,7 @@ $edit_user = null;
             $confirm_password = $_POST['confirm_password'] ?? '';
             $role = $_POST['role'] ?? 'staff';
             $status = $_POST['status'] ?? 'active'; // Added status field
-            if ($username && $email && $password && $confirm_password && in_array($role, ['admin', 'staff'])) {
+            if ($username && $email && $password && $confirm_password && in_array($role, ['admin', 'staff', 'delivery_staff'])) {
                 if ($password !== $confirm_password) {
                     $message = 'Passwords do not match.';
                 } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -43,7 +43,7 @@ $edit_user = null;
         $email = $_POST['email'] ?? '';
         $role = $_POST['role'] ?? 'staff';
         $status = $_POST['status'] ?? 'active'; // Added status field
-        if ($id && $username && $email && in_array($role, ['admin', 'staff'])) {
+        if ($id && $username && $email && in_array($role, ['admin', 'staff', 'delivery_staff'])) {
             if (edit_user($id, $username, $email, $role, $status)) {
                 $_SESSION['flash_message'] = 'User updated successfully!';
                 header('Location: users.php');
@@ -200,6 +200,7 @@ $users = get_all_users();
             <input type="email" name="email" placeholder="Email" value="<?php echo htmlspecialchars($edit_user['email']); ?>" required>
             <select name="role">
                 <option value="staff" <?php if ($edit_user['role']==='staff') echo 'selected'; ?>>Staff</option>
+                <option value="delivery_staff" <?php if ($edit_user['role']==='delivery_staff') echo 'selected'; ?>>Delivery Staff</option>
                 <option value="admin" <?php if ($edit_user['role']==='admin') echo 'selected'; ?>>Admin</option>
             </select>
             <select name="status">
@@ -225,6 +226,7 @@ $users = get_all_users();
             <input id="cpw" type="password" name="confirm_password" placeholder="Confirm Password" required>
             <select name="role">
                 <option value="staff">Staff</option>
+                <option value="delivery_staff">Delivery Staff</option>
                 <option value="admin">Admin</option>
             </select>
             <select name="status">

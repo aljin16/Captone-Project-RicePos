@@ -1,15 +1,10 @@
 <?php
-session_start();
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../classes/Database.php';
 require_login();
 require_delivery_staff();
 
 $pdo = Database::getInstance()->getConnection();
-
-// Ensure schema
-require_once __DIR__ . '/../includes/functions.php';
-ensure_roles_and_delivery_schema();
 
 $uid = $_SESSION['user_id'] ?? 0;
 
