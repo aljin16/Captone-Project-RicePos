@@ -20,6 +20,13 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
         __DIR__ . '/../../PHPMailer/src/Exception.php',
         __DIR__ . '/../../PHPMailer/src/PHPMailer.php',
         __DIR__ . '/../../PHPMailer/src/SMTP.php',
+        // Support bundled PHPMailer under PHPMailer-master
+        __DIR__ . '/../PHPMailer-master/src/Exception.php',
+        __DIR__ . '/../PHPMailer-master/src/PHPMailer.php',
+        __DIR__ . '/../PHPMailer-master/src/SMTP.php',
+        __DIR__ . '/../../PHPMailer-master/src/Exception.php',
+        __DIR__ . '/../../PHPMailer-master/src/PHPMailer.php',
+        __DIR__ . '/../../PHPMailer-master/src/SMTP.php',
     ];
     // Attempt to include without causing warnings
     foreach (array_chunk($phpMailerPaths, 3) as $chunk) {
@@ -48,9 +55,34 @@ function create_user($username, $email, $password, $role = 'staff', $status = 'a
     $existsE = $pdo->prepare('SELECT 1 FROM users WHERE email = ? LIMIT 1');
     $existsE->execute([$email]);
     if ($existsE->fetchColumn()) { throw new Exception('duplicate_email'); }
+    // Normalize role against current ENUM options
+    $role = normalize_user_role_for_insert($role);
     $hash = password_hash($password, PASSWORD_BCRYPT);
     $stmt = $pdo->prepare('INSERT INTO users (username, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?)');
     return $stmt->execute([$username, $email, $hash, $role, $status]);
+}
+
+/**
+ * Ensure provided role matches users.role ENUM. If 'staff' exists use it; otherwise map to 'sales_staff' when available.
+ */
+function normalize_user_role_for_insert(string $role): string {
+    global $pdo;
+    $role = trim($role);
+    try {
+        $row = $pdo->query("SHOW COLUMNS FROM users LIKE 'role'")->fetch();
+        if (!$row || empty($row['Type'])) { return $role; }
+        $type = $row['Type']; // e.g., enum('admin','sales_staff','delivery_staff')
+        if (preg_match_all("/\'([^\']+)\'/", $type, $m)) {
+            $options = $m[1];
+            // If provided role is valid, use it
+            if (in_array($role, $options, true)) { return $role; }
+            // Map legacy 'staff' to 'sales_staff' if present
+            if ($role === 'staff' && in_array('sales_staff', $options, true)) { return 'sales_staff'; }
+            // Fallback to first option
+            return $options[0];
+        }
+    } catch (Throwable $e) { /* ignore */ }
+    return $role;
 }
 
 function edit_user($id, $username, $email, $role, $status) {

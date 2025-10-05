@@ -65,6 +65,8 @@ function record_reset_request_attempt(?string $email, ?string $ip): void {
 function too_many_reset_requests(?string $email, ?string $ip, int $windowMinutes = 60, int $maxPerEmail = 3, int $maxPerIp = 10): bool {
     global $pdo;
     ensure_password_reset_throttle_schema();
+    // Allow disabling throttle via config during testing
+    if (defined('PASSWORD_RESET_THROTTLE_DISABLED') && PASSWORD_RESET_THROTTLE_DISABLED) { return false; }
     $windowMinutes = max(1, $windowMinutes);
     $since = (new DateTimeImmutable('now'))->sub(new DateInterval('PT' . $windowMinutes . 'M'))->format('Y-m-d H:i:s');
     $overEmail = false; $overIp = false;
@@ -115,7 +117,11 @@ function create_password_reset_for_email(string $email, int $ttlSeconds = 3600):
     $stmt = $pdo->prepare('SELECT id, status FROM users WHERE email = ? LIMIT 1');
     $stmt->execute([$email]);
     $user = $stmt->fetch();
-    if (!$user || ($user['status'] ?? '') !== 'active') { return null; }
+    if (!$user) { return null; }
+    // Allow case-insensitive variants of active; block only explicit disabled states
+    $status = strtolower((string)($user['status'] ?? 'active'));
+    $blockedStatuses = ['blocked','disabled','suspended','inactive'];
+    if (in_array($status, $blockedStatuses, true)) { return null; }
 
     $token = bin2hex(random_bytes(32)); // 64 hex chars
     $hash = hash('sha256', $token);

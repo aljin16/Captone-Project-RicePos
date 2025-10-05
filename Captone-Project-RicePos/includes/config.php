@@ -74,11 +74,16 @@ if (!defined('SMTP_FROM_NAME')) {
 
 <?php
 // Application Base URL for building absolute links in emails (e.g., password reset)
-// Example for XAMPP on LAN: 'http://192.168.100.23/public/RicePos/public'
+// Example for XAMPP on LAN: 'http://192.168.100.23/RicePos/Captone-Project-RicePos/public'
 // Leave empty to auto-detect from the current HTTP request.
 if (!defined('APP_BASE_URL')) {
-    define('APP_BASE_URL', 'http://10.189.81.250/public/RicePos/public');
+    define('APP_BASE_URL', 'http://192.168.100.23/RicePos/Captone-Project-RicePos/public');
     // ipv4 lan address change it to if needed
+}
+
+// During testing you can disable password reset throttling (set to true)
+if (!defined('PASSWORD_RESET_THROTTLE_DISABLED')) {
+    define('PASSWORD_RESET_THROTTLE_DISABLED', true);
 }
 ?>
 
