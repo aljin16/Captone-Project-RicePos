@@ -99,298 +99,802 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <style>
-    .weather { color:#b45309; font-weight:700; }
+    /* ============================================
+       MODERN MINIMALIST DELIVERY MANAGEMENT
+       Clean, professional, mobile-first design
+       ============================================ */
+    
+    /* Base Styles */
     *, *::before, *::after { box-sizing: border-box; }
     html, body { height: 100%; }
-    body { display: block; min-height: 100vh; margin: 0; background: #f4f6fb; overflow-x: hidden; }
-    /* Rely on shared .main-content styles in assets/css/style.css for consistent layout */
-    .main-content { background: #f4f6fb; min-height: 100vh; overflow-x: hidden; }
-    .filters { 
-        display: grid; 
-        grid-template-columns: auto 200px 1fr auto; 
-        gap: 0.6rem; 
-        margin: 0.8rem 0; 
-        align-items: center; 
-        width: 100%;
-        padding: 0.3rem 0;
+    body { display: block; min-height: 100vh; margin: 0; background: #f8fafc; overflow-x: hidden; }
+    .main-content { background: #f8fafc; min-height: 100vh; overflow-x: hidden; }
+    
+    /* Typography */
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.025em;
     }
-    .filters input, .filters select { 
-        padding: 0.4rem 0.8rem; 
-        border: 1px solid #d1d5db; 
-        border-radius: 999px; 
-        background: #fff; 
-        font-size: 0.88rem; 
+    
+    .muted-text {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+    
+    .weather { color: #ea580c; font-weight: 600; }
+    
+    /* ============================================
+       UNIFIED DASHBOARD (3-in-1: Map + Weather + GPS)
+       ============================================ */
+    
+    .unified-dashboard {
+        display: grid;
+        grid-template-columns: 70% 30%;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        background: white;
+        border-radius: 20px;
+        padding: 1rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        border: 1px solid #e2e8f0;
+    }
+    
+    /* Map Container (Left 70%) */
+    .map-container {
+        display: flex;
+        flex-direction: column;
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    
+    .map-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .map-header .section-title {
+        margin: 0;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #1e293b;
+    }
+    
+    .map-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn-icon {
+        width: 36px;
         height: 36px;
-        box-sizing: border-box;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        color: #475569;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
         transition: all 0.2s ease;
+        font-size: 1.1rem;
     }
-    .filters input:focus, .filters select:focus {
+    
+    .btn-icon:hover {
+        background: #22c55e;
+        color: white;
+        border-color: #22c55e;
+        transform: translateY(-1px);
+    }
+    
+    .unified-map {
+        width: 100%;
+        height: 500px;
+        background: #f8fafc;
+        border-radius: 0;
+    }
+    
+    /* Sidebar Panel (Right 30%) */
+    .sidebar-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        overflow-y: auto;
+        max-height: 650px;
+    }
+    
+    /* Mini Cards */
+    .mini-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+    
+    .mini-card:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .mini-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .mini-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+    
+    .weather-icon {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+    }
+    
+    .gps-icon {
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        color: white;
+    }
+    
+    .mini-title {
+        flex: 1;
+    }
+    
+    .mini-title h3 {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #1e293b;
+    }
+    
+    .mini-subtitle {
+        margin: 0.25rem 0 0;
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+    
+    .btn-icon-sm {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        color: #475569;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .btn-icon-sm:hover {
+        background: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+    }
+    
+    /* Current Weather Display */
+    .current-weather {
+        text-align: center;
+        padding: 0.75rem 0;
+        margin-bottom: 0.75rem;
+    }
+    
+    .current-temp {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #3b82f6;
+        line-height: 1;
+    }
+    
+    .current-condition {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-top: 0.25rem;
+        text-transform: capitalize;
+    }
+    
+    /* Compact Weather Forecast */
+    .weather-forecast-compact {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .weather-day-compact {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 0.5rem 0.25rem;
+        text-align: center;
+        transition: all 0.2s ease;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .weather-day-compact:hover {
+        background: white;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+    }
+    
+    .weather-day-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
+    }
+    
+    .weather-icon-sm {
+        width: 32px;
+        height: 32px;
+        margin: 0.25rem auto;
+    }
+    
+    .weather-temp-sm {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-top: 0.25rem;
+    }
+    
+    /* Driver Compact Card */
+    .driver-compact {
+        display: flex;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        background: #f8fafc;
+        border-radius: 10px;
+        margin-bottom: 0.75rem;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .driver-avatar-sm {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        background: #dcfce7;
+        border: 2px solid #22c55e;
+        overflow: hidden;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .driver-avatar-sm img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    
+    .driver-info-sm {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .driver-name-sm {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .driver-plate-sm {
+        font-size: 0.75rem;
+        color: #059669;
+        background: #dcfce7;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        display: inline-block;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    
+    .driver-location-sm {
+        font-size: 0.75rem;
+        color: #64748b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Quick Actions */
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .action-btn {
+        padding: 0.5rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        color: #475569;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .track-btn:hover {
+        background: #22c55e;
+        color: white;
+        border-color: #22c55e;
+    }
+    
+    .call-btn:hover {
+        background: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+    }
+    
+    .maps-btn:hover {
+        background: #f59e0b;
+        color: white;
+        border-color: #f59e0b;
+    }
+    
+    .setup-btn:hover {
+        background: #8b5cf6;
+        color: white;
+        border-color: #8b5cf6;
+    }
+    
+    .btn.small {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        background: #3b82f6;
+        border: 1px solid #3b82f6;
+        color: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 600;
+    }
+    
+    .btn.small:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+    }
+    
+    /* Filters Section */
+    .filters {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+    }
+    
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .filters label {
+        font-weight: 600;
+        color: #475569;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+    
+    .filters label[for="statusFilter"] {
+        position: static;
+        width: auto;
+        height: auto;
+        clip: auto;
+        overflow: visible;
+    }
+    
+    .filters select,
+    .filters input[type="text"] {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: #fff;
+        font-size: 0.9rem;
+        color: #1e293b;
+        transition: all 0.2s ease;
+        height: 42px;
+    }
+    
+    .filters select {
+        min-width: 180px;
+    }
+    
+    .filters input[type="text"] {
+        flex: 1;
+        min-width: 250px;
+    }
+    
+    .filters select:focus,
+    .filters input:focus {
+        outline: none;
         border-color: #3b82f6;
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        outline: none;
     }
-    .filters select { 
-        min-width: 180px; 
-        width: 200px; 
-        -webkit-appearance: none; 
-        -moz-appearance: none; 
-        appearance: none; 
-        background-position: right 12px center; 
-        background-repeat: no-repeat; 
-    }
-    .filters input[type="text"] { 
-        width: 100%; 
-        min-width: 320px; 
-    }
-    .filters .btn { 
-        padding: 0.35rem 0.8rem; 
-        background: #3b82f6; 
-        color: #fff; 
-        border: none; 
-        border-radius: 999px; 
-        font-weight: 700; 
-        cursor: pointer; 
-        height: 36px;
+    
+    .filters .btn {
+        padding: 0.5rem 1.25rem;
+        background: #3b82f6;
+        color: #fff;
+        border: 1px solid #3b82f6;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        height: 42px;
         white-space: nowrap;
-        box-sizing: border-box;
-        transition: background 0.15s ease;
-        font-size: 0.85rem;
-    }
-    .filters .btn:hover { background: #2563eb; }
-    .filter-group { display: contents; }
-    /* Top quick actions */
-    .top-actions { display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin:0.3rem 0 0.2rem; }
-    .btn-outline { background:#e5e7eb; color:#111827; border:1px solid #d1d5db; border-radius:999px; padding:0.4rem 0.8rem; font-size:0.88rem; font-weight:800; cursor:pointer; transition:all .15s ease; }
-    .btn-outline:hover { background:#dbeafe; border-color:#bfdbfe; }
-    /* Visually hide the Status label but keep it accessible */
-    .filters label[for="statusFilter"]{
-        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
-    }
-    .badge { display:inline-block; padding: 0.1rem 0.4rem; border-radius: 6px; font-size: 0.78rem; border:1px solid transparent; }
-    .b-pending { background:#fee2e2; color:#991b1b; border-color:#fecaca; }
-    .b-transit { background:#dbeafe; color:#1e40af; border-color:#bfdbfe; }
-    .b-delivered { background:#dcfce7; color:#166534; border-color:#bbf7d0; }
-    .b-cancelled { background:#e5e7eb; color:#374151; border-color:#d1d5db; }
-    .pagination { display:flex; gap:0.3rem; margin-top: 0.8rem; }
-    .pagination a { padding:0.3rem 0.6rem; border:1px solid #d1d5db; border-radius:6px; text-decoration:none; color:#111827; }
-    .pagination .active { background:#e5e7eb; }
-     /* Modern table styles */
-     .table-card { background:#fff; border:1px solid #e5e7eb; border-radius:14px; box-shadow: 0 6px 18px rgba(17,24,39,0.05); overflow: hidden; }
-     .table-scroll { overflow:auto; }
-     .user-table { width:100%; border-collapse: separate; border-spacing:0; min-width: 920px; }
-    .user-table thead th { position: sticky; top:0; background: linear-gradient(180deg,#f8fafc 0%, #eef2ff 100%); color:#1f2937; font-weight:800; font-size:0.95rem; letter-spacing:0.3px; text-align:left; padding:0.9rem 1rem; border-bottom:1px solid #e5e7eb; }
-     .user-table thead th:first-child { border-top-left-radius: 14px; }
-     .user-table thead th:last-child { border-top-right-radius: 14px; }
-    .user-table tbody td { padding:0.85rem 1rem; border-bottom:1px solid #eef2f7; color:#111827; background:#fff; vertical-align: top; }
-    .user-table tbody tr:nth-child(odd) td { background:#fcfdff; }
-    .user-table tbody tr:hover td { background:#f7fbff; }
-     .user-table tbody tr:last-child td { border-bottom:none; }
-     .user-table tbody td:nth-child(1) { color:#475569; font-variant-numeric: tabular-nums; }
-     .user-table tbody td:nth-child(2) { color:#475569; }
-     .user-table tbody td:nth-child(7) { text-align:right; font-variant-numeric: tabular-nums; }
-     .user-table tbody td:nth-child(9) { white-space: nowrap; }
-     .table-toolbar { display:flex; align-items:center; justify-content:space-between; gap:0.6rem; margin: 0.5rem 0 0.6rem; }
-    .map-panel { margin-top: 0.8rem; background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding: 0.6rem; }
-    #mgmtMap { width: 100%; height: 360px; border-radius: 10px; }
-    .route-summary { margin-top: 0.4rem; color:#111827; font-size: 1.05rem; font-weight: 700; }
-    .route-summary .dist { color:#1d4ed8; }
-    .route-summary .eta { color:#059669; }
-    .btn.small { padding: 0.25rem 0.6rem; font-size: 0.9rem; }
-    .weather-forecast-icon { animation:none; filter:none; border-radius:12px; background:#fff; padding:4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
-     .weather-forecast-icon:hover {
-         transform: scale(1.1) rotate(5deg);
-         filter: drop-shadow(0 8px 24px rgba(44,108,223,0.35));
-    }
-    @keyframes floatIcon {
-         0% { transform: translateY(0) scale(1) rotate(0deg); filter: drop-shadow(0 6px 16px rgba(44,108,223,0.25)); }
-         50% { transform: translateY(-12px) scale(1.05) rotate(2deg); filter: drop-shadow(0 16px 32px rgba(44,108,223,0.3)); }
-         100% { transform: translateY(0) scale(1) rotate(0deg); filter: drop-shadow(0 6px 16px rgba(44,108,223,0.25)); }
-     }
-     .weather-card { background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04); padding:0.6rem 0.5rem; display:flex; flex-direction:column; align-items:center; min-width:0; border:1px solid #eef2ff; transition:none; overflow:hidden; }
-     .weather-card::before { display:none; }
-     .weather-card:hover {
-         transform: translateY(-4px);
-         box-shadow: 0 12px 40px rgba(44,108,223,0.18), 0 4px 12px rgba(0,0,0,0.08);
-     }
-     .weather-day { font-size: 0.9rem; font-weight: 700; color:#374151; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.4px; }
-     .weather-temp { font-size: 1rem; font-weight: 800; color:#1e40af; margin:0.2rem 0; }
-     .weather-rain { font-size: 0.85rem; color:#6b7280; font-weight:600; background:#eef2ff; padding:0.15rem 0.5rem; border-radius:999px; border:1px solid #e0e7ff; }
-     .weather-grid { display:grid; grid-template-columns: repeat(5, 1fr); gap:0.6rem; position:relative; z-index:1; }
-
-    /* Compact weather/GPS panels - neutral backgrounds, smaller footprint */
-    #originWeatherPanel, #gpsLocationPanel { background:#fff !important; border:1px solid #e5e7eb !important; border-radius:14px !important; box-shadow:0 4px 12px rgba(17,24,39,0.06) !important; }
-    #originWeatherPanel > svg, #gpsLocationPanel > svg { display:none !important; }
-    #gpsRidersList { max-height: 160px !important; }
-    .rider-avatar { width:36px; height:36px; font-size:1.2rem; }
-    .rider-actions .btn { padding:0.25rem 0.6rem; font-size:0.8rem; border-radius:10px; }
-     .gps-rider-card {
-         background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
-         border-radius: 16px;
-         box-shadow: 0 4px 20px rgba(34,197,94,0.12), 0 2px 8px rgba(0,0,0,0.05);
-         padding: 1rem;
-         margin-bottom: 0.8rem;
-         border: 1px solid rgba(34,197,94,0.08);
-         transition: all 0.3s ease;
-         position: relative;
-         overflow: hidden;
-     }
-     .gps-rider-card::before {
-         content: '';
-         position: absolute;
-         top: 0;
-         left: 0;
-         right: 0;
-         height: 3px;
-         background: linear-gradient(90deg, #22c55e, #16a34a, #15803d);
-         border-radius: 16px 16px 0 0;
-     }
-     .gps-rider-card:hover {
-         transform: translateY(-2px);
-         box-shadow: 0 8px 30px rgba(34,197,94,0.18), 0 4px 12px rgba(0,0,0,0.08);
-     }
-     .rider-info {
-         display: flex;
-         align-items: center;
-         gap: 1rem;
-         margin-bottom: 0.8rem;
-     }
-     .rider-avatar {
-         font-size: 2rem;
-         width: 50px;
-         height: 50px;
-         display: flex;
-         align-items: center;
-         justify-content: center;
-         background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.05));
-         border-radius: 50%;
-         border: 2px solid rgba(34,197,94,0.2);
-     }
-     .rider-details {
-         flex: 1;
-     }
-     .rider-name {
-         font-size: 1rem;
-         font-weight: 600;
-         color: #1f2937;
-         margin-bottom: 0.2rem;
-     }
-     .rider-status {
-         font-size: 0.9rem;
-         font-weight: 500;
-         color: #374151;
-         margin-bottom: 0.2rem;
-     }
-     .rider-location {
-         font-size: 0.85rem;
-         color: #6b7280;
-         font-weight: 500;
-     }
-     .rider-vehicle {
-         font-size: 0.8rem;
-         color: #059669;
-         font-weight: 600;
-         background: rgba(5,150,105,0.1);
-         padding: 0.2rem 0.5rem;
-         border-radius: 8px;
-         margin-top: 0.3rem;
-         display: inline-block;
-     }
-      .rider-avatar-img { width: 100%; height: 100%; object-fit: contain; display: block; }
-      .rider-actions {
-         display: flex;
-         gap: 0.5rem;
-         justify-content: flex-end;
-     }
-     .rider-actions .btn {
-         padding: 0.3rem 0.8rem;
-         font-size: 0.85rem;
-         background: #22c55e;
-         border-color: #22c55e;
-         color: white;
-     }
-     .rider-actions .btn:hover {
-         background: #16a34a;
-         border-color: #16a34a;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
     }
     
-    /* Mobile Responsive Styles */
-    @media(max-width:1024px){
-        .filters{ grid-template-columns:1fr; gap:0.8rem; }
-        .filters .filter-group{ width:100%; }
-        .filters select{ width:100%; min-width:100%; }
-        .filters input[type="text"]{ min-width:100%; }
-        .filters .btn{ width:100%; }
-        .weather-grid{ grid-template-columns:repeat(4, 1fr); gap:0.8rem; }
+    .filters .btn:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+        transform: translateY(-1px);
     }
     
-    @media(max-width:768px){
-        /* Weather and GPS panels stacked */
-        .weather-grid{ grid-template-columns:repeat(3, 1fr); gap:0.6rem; }
-        .weather-card{ padding:0.8rem 0.6rem; }
-        .weather-day{ font-size:0.9rem; }
-        .weather-temp{ font-size:1rem; }
-        .weather-rain{ font-size:0.85rem; padding:0.15rem 0.5rem; }
-        .weather-forecast-icon{ width:40px !important; height:40px !important; }
-        
-        /* GPS Rider Card */
-        .gps-rider-card{ padding:0.8rem; }
-        .rider-info{ flex-direction:column; align-items:flex-start; gap:0.6rem; }
-        .rider-avatar{ width:40px; height:40px; font-size:1.5rem; }
-        .rider-name{ font-size:0.95rem; }
-        .rider-status{ font-size:0.85rem; }
-        .rider-location{ font-size:0.8rem; }
-        .rider-vehicle{ font-size:0.75rem; }
-        .rider-actions{ flex-direction:column; width:100%; }
-        .rider-actions .btn{ width:100%; justify-content:center; min-height:44px; }
-        
-        /* Table card */
-        .table-card{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
-        .user-table{ min-width:920px; font-size:0.9rem; }
-        .user-table thead th{ padding:0.7rem 0.8rem; font-size:0.85rem; }
-        .user-table tbody td{ padding:0.7rem 0.8rem; font-size:0.85rem; }
-        .user-table tbody td form{ flex-wrap:wrap; }
-        .user-table tbody td select, .user-table tbody td button{ font-size:0.85rem; padding:0.3rem 0.4rem; }
-        
-        /* Map panel */
-        #mgmtMap{ height:300px; }
-        .route-summary{ font-size:0.95rem; }
-        
-        /* Pagination */
-        .pagination{ flex-wrap:wrap; justify-content:center; }
-        .pagination a{ padding:0.4rem 0.7rem; font-size:0.9rem; }
+    .route-summary {
+        margin-top: 0.75rem;
+        padding: 0.75rem;
+        background: #f8fafc;
+        border-radius: 8px;
+        color: #1e293b;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-align: center;
     }
     
-    @media(max-width:640px){
-        .weather-grid{ grid-template-columns:repeat(2, 1fr); gap:0.5rem; }
-        .weather-card{ padding:0.7rem 0.5rem; }
-        .weather-day{ font-size:0.85rem; }
-        .weather-temp{ font-size:0.95rem; }
-        .weather-rain{ font-size:0.8rem; }
-        .weather-forecast-icon{ width:36px !important; height:36px !important; }
-        
-        /* GPS panel */
-        .rider-actions .btn{ font-size:0.85rem; padding:0.5rem; }
-        
-        /* Filters fully stacked */
-        .filters{ padding:0.4rem 0; }
-        .filter-group{ flex-direction:column; align-items:stretch; height:auto; }
-        .filter-group label{ margin-bottom:0.3rem; }
-        
-        /* Map smaller */
-        #mgmtMap{ height:250px; }
+    .route-summary .dist {
+        color: #3b82f6;
     }
     
-    @media(max-width:480px){
-        .weather-grid{ grid-template-columns:1fr; gap:0.5rem; }
-        .weather-card{ padding:0.8rem; }
-        .weather-forecast-icon{ width:44px !important; height:44px !important; }
+    .route-summary .eta {
+        color: #059669;
+    }
+    
+    /* Table Styles */
+    .table-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 1.5rem;
+    }
+    
+    .table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .user-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: 920px;
+    }
+    
+    .user-table thead th {
+        position: sticky;
+        top: 0;
+        background: #f8fafc;
+        color: #475569;
+        font-weight: 700;
+        font-size: 0.875rem;
+        letter-spacing: 0.025em;
+        text-align: left;
+        padding: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+        text-transform: uppercase;
+    }
+    
+    .user-table tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid #f1f5f9;
+        color: #1e293b;
+        background: #fff;
+        vertical-align: middle;
+        font-size: 0.9rem;
+    }
+    
+    .user-table tbody tr:hover td {
+        background: #f8fafc;
+    }
+    
+    .user-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .user-table tbody td:nth-child(1) {
+        color: #64748b;
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+    }
+    
+    .user-table tbody td:nth-child(8) {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+    }
+    
+    .user-table tbody td form {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .user-table tbody td select,
+    .user-table tbody td button {
+        padding: 0.4rem 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.875rem;
+    }
+    
+    .user-table tbody td button {
+        background: #3b82f6;
+        color: #fff;
+        border-color: #3b82f6;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .user-table tbody td button:hover {
+        background: #2563eb;
+    }
+    
+    /* Badges */
+    .badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1px solid;
+        text-transform: capitalize;
+    }
+    
+    .b-pending {
+        background: #fef3c7;
+        color: #92400e;
+        border-color: #fde68a;
+    }
+    
+    .b-transit {
+        background: #dbeafe;
+        color: #1e40af;
+        border-color: #93c5fd;
+    }
+    
+    .b-delivered {
+        background: #dcfce7;
+        color: #166534;
+        border-color: #86efac;
+    }
+    
+    .b-cancelled {
+        background: #f1f5f9;
+        color: #475569;
+        border-color: #cbd5e1;
+    }
+    
+    /* Pagination */
+    .pagination {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-top: 1.5rem;
+    }
+    
+    .pagination a {
+        padding: 0.5rem 0.875rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #475569;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    
+    .pagination a:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+    
+    .pagination .active {
+        background: #3b82f6;
+        color: #fff;
+        border-color: #3b82f6;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 1200px) {
+        .unified-dashboard {
+            grid-template-columns: 65% 35%;
+        }
         
-        /* Table: show horizontal scroll hint */
-        .table-card::after{ content:'← Scroll →'; display:block; text-align:center; padding:0.5rem; color:#9ca3af; font-size:0.85rem; }
+        .weather-forecast-compact {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 1024px) {
+        .unified-dashboard {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
         
-        /* Rider card even more compact */
-        .rider-name{ font-size:0.9rem; }
-        .rider-status, .rider-location{ font-size:0.8rem; }
+        .sidebar-panel {
+            max-height: none;
+            flex-direction: row;
+            gap: 1rem;
+        }
+        
+        .mini-card {
+            flex: 1;
+        }
+        
+        .weather-forecast-compact {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .unified-map {
+            height: 400px;
+        }
+        
+        .filters {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .filter-group {
+            width: 100%;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .filters select,
+        .filters input[type="text"],
+        .filters .btn {
+            width: 100%;
+            min-width: 100%;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .section-title {
+            font-size: 1rem;
+        }
+        
+        .sidebar-panel {
+            flex-direction: column;
+        }
+        
+        .mini-card {
+            padding: 0.875rem;
+        }
+        
+        .current-temp {
+            font-size: 2rem;
+        }
+        
+        .weather-forecast-compact {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .quick-actions {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .unified-map {
+            height: 350px;
+        }
+        
+        .user-table {
+            font-size: 0.85rem;
+        }
+        
+        .user-table thead th,
+        .user-table tbody td {
+            padding: 0.75rem 0.5rem;
+        }
+    }
+    
+    @media (max-width: 640px) {
+        .unified-dashboard {
+            padding: 0.75rem;
+        }
+        
+        .map-header {
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .map-header .section-title {
+            font-size: 0.95rem;
+        }
+        
+        .unified-map {
+            height: 300px;
+        }
+        
+        .weather-forecast-compact {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .current-temp {
+            font-size: 1.75rem;
+        }
+        
+        .table-scroll::after {
+            content: '← Scroll →';
+            display: block;
+            text-align: center;
+            padding: 0.75rem;
+            color: #94a3af;
+            font-size: 0.85rem;
+            background: #f8fafc;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .weather-forecast-compact {
+            grid-template-columns: 1fr;
+        }
+        
+        .quick-actions {
+            grid-template-columns: repeat(4, 1fr);
+        }
+        
+        .action-btn {
+            font-size: 1rem;
+            padding: 0.4rem;
+        }
+        
+        .unified-map {
+            height: 250px;
+        }
     }
     </style>
 </head>
@@ -398,65 +902,98 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
     <?php $activePage = 'delivery_management.php'; $pageTitle = 'Delivery Management'; include __DIR__ . '/../includes/sidebar.php'; include __DIR__ . '/../includes/header.php'; ?>
     <main class="main-content">
         
-        <?php if ($message): ?><div class="muted" style="margin-bottom:0.5rem;"><?php echo htmlspecialchars($message); ?></div><?php endif; ?>
-        <div class="top-actions">
-            <button class="btn-outline" type="button" onclick="document.getElementById('originWeatherPanel').scrollIntoView({behavior:'smooth', block:'start'});">Weather forecast</button>
-            <button class="btn-outline" type="button" onclick="document.getElementById('gpsLocationPanel').scrollIntoView({behavior:'smooth', block:'start'});">gps live location</button>
+        <?php if ($message): ?>
+        <div style="background: #dbeafe; border: 1px solid #93c5fd; color: #1e40af; padding: 0.75rem 1rem; border-radius: 10px; margin-bottom: 1rem; font-weight: 600;">
+            <?php echo htmlspecialchars($message); ?>
         </div>
-                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.2rem;">
-             <!-- Weather Forecast Panel -->
-             <div id="originWeatherPanel" class="card" style="box-shadow:0 8px 32px rgba(44,108,223,0.10),0 1.5px 0 rgba(255,255,255,0.4);border-radius:18px;overflow:hidden;position:relative;background:linear-gradient(120deg,rgba(44,108,223,0.13) 0%,rgba(255,255,255,0.85) 100%), url('https://www.transparenttextures.com/patterns/cubes.png');border:2.5px solid rgba(44,108,223,0.13);box-shadow:0 8px 32px rgba(44,108,223,0.13),0 1.5px 0 rgba(255,255,255,0.4),0 0 32px 0 rgba(44,108,223,0.08);">
-            <!-- Decorative SVG top right -->
-            <svg style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;z-index:0;opacity:0.22;pointer-events:none;" viewBox="0 0 120 120"><defs><radialGradient id="g1" cx="60" cy="60" r="60" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#2d6cdf"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient></defs><circle cx="60" cy="60" r="60" fill="url(#g1)"/></svg>
-            <!-- Decorative SVG bottom left -->
-            <svg style="position:absolute;bottom:-30px;left:-30px;width:100px;height:100px;z-index:0;opacity:0.16;pointer-events:none;" viewBox="0 0 100 100"><defs><radialGradient id="g2" cx="50" cy="50" r="50" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#e0e7ff"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient></defs><circle cx="50" cy="50" r="50" fill="url(#g2)"/></svg>
-            <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:0.7rem;">
-                      <div>
-                          <strong style="font-size:1.15rem;letter-spacing:0.5px;">7-Day Weather Forecast</strong>
-                          <div id="realtimeDateTime" style="font-size:0.9rem;color:#6b7280;margin-top:0.2rem;font-weight:500;"></div>
-                          <div id="originWeatherLocation" class="muted" style="font-size:0.9rem;color:#374151;margin-top:0.15rem;">📍 Resolving location…</div>
-                      </div>
-                <button class="btn small" id="refreshOriginWeather">Refresh</button>
+        <?php endif; ?>
+        
+        <!-- Unified Dashboard: Map + Weather + GPS (3-in-1 View) -->
+        <div class="unified-dashboard">
+            <!-- Left: Interactive Map (70%) -->
+            <div class="map-container">
+                <div class="map-header">
+                    <h2 class="section-title">
+                        <i class='bx bx-map'></i> Live Delivery Map
+                    </h2>
+                    <div class="map-actions">
+                        <button class="btn-icon" onclick="refreshGPSData()" title="Refresh GPS">
+                            <i class='bx bx-refresh'></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="mgmtMap" class="unified-map"></div>
+                <div id="mgmtSummary" class="route-summary"></div>
+                <div id="routeWeatherSummary" class="muted" style="margin-top:0.5rem;"></div>
             </div>
-                 <div id="originWeatherDaily" class="weather-grid"></div>
-            <div id="originWeatherError" class="muted" style="margin-top:0.5rem;position:relative;z-index:1;"></div>
-             </div>
 
-             <!-- GPS Live Location Panel -->
-             <div id="gpsLocationPanel" class="card" style="box-shadow:0 8px 32px rgba(34,197,94,0.10),0 1.5px 0 rgba(255,255,255,0.4);border-radius:18px;overflow:hidden;position:relative;background:linear-gradient(120deg,rgba(34,197,94,0.13) 0%,rgba(255,255,255,0.85) 100%), url('https://www.transparenttextures.com/patterns/cubes.png');border:2.5px solid rgba(34,197,94,0.13);box-shadow:0 8px 32px rgba(34,197,94,0.13),0 1.5px 0 rgba(255,255,255,0.4),0 0 32px 0 rgba(34,197,94,0.08);">
-                 <!-- Decorative SVG top right -->
-                 <svg style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;z-index:0;opacity:0.22;pointer-events:none;" viewBox="0 0 120 120"><defs><radialGradient id="g3" cx="60" cy="60" r="60" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#22c55e"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient></defs><circle cx="60" cy="60" r="60" fill="url(#g3)"/></svg>
-                 <!-- Decorative SVG bottom left -->
-                 <svg style="position:absolute;bottom:-30px;left:-30px;width:100px;height:100px;z-index:0;opacity:0.16;pointer-events:none;" viewBox="0 0 100 100"><defs><radialGradient id="g4" cx="50" cy="50" r="50" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#bbf7d0"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient></defs><circle cx="50" cy="50" r="50" fill="url(#g4)"/></svg>
-                 <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:0.7rem;">
-                     <div>
-                        <strong style="font-size:1.15rem;letter-spacing:0.5px;">GPS Live Location</strong>
-                        <div id="gpsStatus" style="font-size:0.9rem;color:#6b7280;margin-top:0.2rem;font-weight:500;">⏳ Waiting for GPS...</div>
-                     </div>
-                     <button class="btn small" id="refreshGPS" style="background: #22c55e; border-color: #22c55e;">Refresh</button>
-                 </div>
-                                   <div id="gpsRidersList" style="position:relative;z-index:1;max-height:300px;overflow-y:auto;">
-                      <div class="gps-rider-card">
-                          <div class="rider-info">
-                               <div class="rider-avatar"><img src="assets/img/dce3d07b96a346beabc6721b41ba045c-removebg-preview.png" alt="Toyota Hilux" class="rider-avatar-img"></div>
-                              <div class="rider-details">
-                                  <div class="rider-name">Edgar - Toyota Hilux</div>
-                                   <div class="rider-status"><strong>Plate Number:</strong> ABC-123</div>
-                                  <div class="rider-location" id="gpsLocationText">📍 Resolving location…</div>
-                                  <div class="rider-vehicle">🚚 Toyota Hilux - Plate: ABC-123</div>
-                              </div>
-                          </div>
-                          <div class="rider-actions">
-                              <button class="btn small" onclick="trackRider('edgar')">Track Live</button>
-                              <button class="btn small" onclick="contactRider('edgar')">Call</button>
-                              <button class="btn small" onclick="openGoogleMaps()" style="background: #4285f4; border-color: #4285f4;">🗺️ Maps</button>
-                              <button class="btn small" onclick="showGPSInstructions()">GPS Setup</button>
-                          </div>
-                      </div>
-                  </div>
-                 <div id="gpsError" class="muted" style="margin-top:0.5rem;position:relative;z-index:1;"></div>
-             </div>
+            <!-- Right: Weather + GPS Stacked (30%) -->
+            <div class="sidebar-panel">
+                <!-- Weather Panel (Compact) -->
+                <div class="mini-card weather-mini">
+                    <div class="mini-card-header">
+                        <div class="mini-icon weather-icon">
+                            <i class='bx bxs-sun'></i>
+                        </div>
+                        <div class="mini-title">
+                            <h3>Weather</h3>
+                            <p id="realtimeDateTime" class="mini-subtitle"></p>
+                        </div>
+                        <button class="btn-icon-sm" id="refreshOriginWeather" title="Refresh Weather">
+                            <i class='bx bx-refresh'></i>
+                        </button>
+                    </div>
+                    <div id="currentWeather" class="current-weather">
+                        <div class="current-temp">--°</div>
+                        <div class="current-condition">Loading...</div>
+                    </div>
+                    <div id="originWeatherDaily" class="weather-forecast-compact"></div>
+                </div>
+
+                <!-- GPS Info Panel (Compact) -->
+                <div class="mini-card gps-mini">
+                    <div class="mini-card-header">
+                        <div class="mini-icon gps-icon">
+                            <i class='bx bxs-location-plus'></i>
+                        </div>
+                        <div class="mini-title">
+                            <h3>GPS Tracker</h3>
+                            <p id="gpsStatus" class="mini-subtitle">⏳ Waiting...</p>
+                        </div>
+                        <button class="btn-icon-sm" id="refreshGPS" title="Refresh GPS">
+                            <i class='bx bx-refresh'></i>
+                        </button>
+                    </div>
+                    
+                    <div class="driver-compact">
+                        <div class="driver-avatar-sm">
+                            <img src="assets/img/dce3d07b96a346beabc6721b41ba045c-removebg-preview.png" alt="Edgar">
+                        </div>
+                        <div class="driver-info-sm">
+                            <div class="driver-name-sm">Edgar - Toyota Hilux</div>
+                            <div class="driver-plate-sm">ABC-123</div>
+                            <div id="gpsLocationText" class="driver-location-sm">📍 Resolving...</div>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <button class="action-btn track-btn" onclick="trackRider('edgar')" title="Track">
+                            <i class='bx bx-navigation'></i>
+                        </button>
+                        <button class="action-btn call-btn" onclick="contactRider('edgar')" title="Call">
+                            <i class='bx bx-phone'></i>
+                        </button>
+                        <button class="action-btn maps-btn" onclick="openGoogleMaps()" title="Google Maps">
+                            <i class='bx bx-map'></i>
+                        </button>
+                        <button class="action-btn setup-btn" onclick="showGPSInstructions()" title="Setup">
+                            <i class='bx bx-info-circle'></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
+        <!-- Delivery Filters -->
         <form method="get" class="filters">
             <div class="filter-group">
                 <label for="statusFilter" style="font-weight:700; color:#374151;">Status:</label>
@@ -471,12 +1008,6 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
             <input type="text" name="q" placeholder="Search by name, address or TXN" value="<?php echo htmlspecialchars($q); ?>">
             <button class="btn" type="submit">Filter</button>
         </form>
-
-        <div class="map-panel">
-            <div id="mgmtMap"></div>
-            <div id="mgmtSummary" class="route-summary"></div>
-            <div id="routeWeatherSummary" class="muted" style="margin-top:0.5rem;"></div>
-        </div>
         <div class="table-card">
           <div class="table-scroll">
         <table class="user-table">
@@ -500,17 +1031,21 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
                     </td>
                     <?php if ($role==='admin'): ?>
                     <td>
-                        <form method="post" style="display:flex; gap:6px; align-items:center;">
+                        <form method="post" style="display:flex; gap:0.5rem; align-items:center; flex-wrap: wrap;">
                             <input type="hidden" name="delivery_id" value="<?php echo (int)$d['id']; ?>">
-                            <select name="status" class="btn" style="padding:0.35rem 0.5rem;">
+                            <select name="status" style="padding:0.4rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.875rem; background: #fff;">
                                 <option value="pending" <?php echo $d['status']==='pending'?'selected':''; ?>>Pending</option>
                                 <option value="out_for_delivery" <?php echo $d['status']==='out_for_delivery'?'selected':''; ?>>In Transit</option>
                                 <option value="delivered" <?php echo $d['status']==='delivered'?'selected':''; ?>>Delivered</option>
                                 <option value="cancelled" <?php echo $d['status']==='cancelled'?'selected':''; ?>>Cancelled</option>
                             </select>
-                            <button type="submit" name="update_delivery_status" class="btn">Update</button>
+                            <button type="submit" name="update_delivery_status" style="padding:0.4rem 0.75rem; background:#3b82f6; color:#fff; border:1px solid #3b82f6; border-radius:6px; font-size:0.875rem; font-weight:600; cursor:pointer;">
+                                <i class='bx bx-check'></i> Update
+                            </button>
                         </form>
-                        <button class="btn" onclick="focusDelivery(<?php echo (int)$d['id']; ?>)"><i class='bx bx-map'></i> Route</button>
+                        <button style="margin-top:0.5rem; padding:0.4rem 0.75rem; background:#fff; color:#475569; border:1px solid #e2e8f0; border-radius:6px; font-size:0.875rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:0.25rem;" onclick="focusDelivery(<?php echo (int)$d['id']; ?>)">
+                            <i class='bx bx-map'></i> View Route
+                        </button>
                     </td>
                     <?php endif; ?>
                 </tr>
@@ -582,7 +1117,7 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
              'thunderstorms': 'rainy.png'
          };
          const file = map[type] || 'cloudy.png';
-         return `<img src="assets/img/${file}" alt="${type}" width="36" height="36" style="display:block;" />`;
+         return `<img src="assets/img/${file}" alt="${type}" class="weather-forecast-icon" style="display:block; margin: 0 auto;" />`;
      }
 
      // Map Open-Meteo weather codes to our icon types
@@ -612,62 +1147,80 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
 
     async function fetchOriginWeather() {
         const panel = document.getElementById('originWeatherDaily');
-        const errorDiv = document.getElementById('originWeatherError');
-        panel.innerHTML = '<span class="muted">Loading...</span>';
-        errorDiv.textContent = '';
+        const currentWeatherDiv = document.getElementById('currentWeather');
+        
+        panel.innerHTML = '<span class="muted" style="grid-column: 1/-1; text-align: center;">Loading...</span>';
         try {
-            // Use Open-Meteo directly for reliability (no API key required)
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${STORE.lat}&longitude=${STORE.lng}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&timezone=Asia/Manila`;
+            // Use Open-Meteo for current + forecast
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${STORE.lat}&longitude=${STORE.lng}&current=temperature_2m,weathercode&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&timezone=Asia/Manila`;
             const om = await fetch(url, { headers: { 'Accept': 'application/json' }}).then(r=>r.json());
+            
+            // Update current weather
+            if (om && om.current) {
+                const currentTemp = Math.round(om.current.temperature_2m || 0);
+                const currentCode = om.current.weathercode;
+                const currentType = mapWeatherCodeToType(currentCode);
+                const conditions = {
+                    'sunny': 'Clear Sky',
+                    'partly-cloudy-day': 'Partly Cloudy',
+                    'cloudy': 'Cloudy',
+                    'rainy': 'Rainy',
+                    'snowy': 'Snow',
+                    'thunderstorms': 'Thunderstorms'
+                };
+                currentWeatherDiv.innerHTML = `
+                    <div class="current-temp">${currentTemp}°C</div>
+                    <div class="current-condition">${conditions[currentType] || 'Unknown'}</div>
+                `;
+            }
+            
+            // Update forecast (show 3 days)
             const times = (om && om.daily && om.daily.time) ? om.daily.time : [];
             const tmaxs = (om && om.daily && om.daily.temperature_2m_max) ? om.daily.temperature_2m_max : [];
             const tmins = (om && om.daily && om.daily.temperature_2m_min) ? om.daily.temperature_2m_min : [];
-            const pops = (om && om.daily && om.daily.precipitation_probability_max) ? om.daily.precipitation_probability_max : [];
             const codes = (om && om.daily && om.daily.weathercode) ? om.daily.weathercode : [];
-            const cards = times.slice(0,7).map((t,i)=>{
+            
+            const cards = times.slice(0,3).map((t,i)=>{
                 const day = new Date(t+'T00:00:00').toLocaleDateString(undefined,{weekday:'short'});
                 const tmax = Math.round(tmaxs[i]||0);
                 const tmin = Math.round(tmins[i]||0);
-                const pop = Math.round(pops[i]||0);
                 const wcode = codes[i];
                 const type = mapWeatherCodeToType(wcode);
-                const icon = `<div class="weather-forecast-icon" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;">${getWeatherIconImg(type)}</div>`;
-                return `<div class="weather-card"><div class="weather-day">${day}</div>${icon}<div class="weather-temp">${tmax}° / ${tmin}°C</div><div class="weather-rain">${pop}% rain</div></div>`;
+                const iconMap = {
+                    'sunny': 'sunny.png',
+                    'partly-cloudy-day': 'cloudy.png',
+                    'cloudy': 'cloudy.png',
+                    'rainy': 'rainy.png',
+                    'snowy': 'cloudy.png',
+                    'thunderstorms': 'rainy.png'
+                };
+                const iconFile = iconMap[type] || 'cloudy.png';
+                return `<div class="weather-day-compact">
+                    <div class="weather-day-label">${day}</div>
+                    <img src="assets/img/${iconFile}" alt="${type}" class="weather-icon-sm" />
+                    <div class="weather-temp-sm">${tmax}°/${tmin}°</div>
+                </div>`;
             }).join('');
-            panel.innerHTML = cards || '<span class="muted">No forecast</span>';
-             // Update readable location via reverse geocoding
-             try {
-                 const gRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${STORE.lat}&lon=${STORE.lng}&zoom=12&addressdetails=1`, { headers: { 'Accept': 'application/json' }});
-                 const g = await gRes.json();
-                 const a = g.address || {};
-                 const parts = [a.village || a.suburb || a.barangay, a.town || a.city || a.municipality, a.state || a.region || a.province].filter(Boolean);
-                 const loc = parts.length ? parts.join(', ') : (g.display_name || `${STORE.lat.toFixed(3)}, ${STORE.lng.toFixed(3)}`);
-                 const locEl = document.getElementById('originWeatherLocation');
-                 if (locEl) locEl.textContent = `📍 ${loc}`;
-             } catch {}
-            // Done
+            panel.innerHTML = cards || '<span class="muted" style="grid-column: 1/-1;">No forecast</span>';
         } catch(e) {
-            panel.innerHTML = '<span class="muted">No forecast</span>';
-            errorDiv.textContent = '';
+            panel.innerHTML = '<span class="muted" style="grid-column: 1/-1;">Failed to load</span>';
+            currentWeatherDiv.innerHTML = `
+                <div class="current-temp">--°</div>
+                <div class="current-condition">Unavailable</div>
+            `;
         }
     }
     // Real-time date and time function
     function updateDateTime() {
         const now = new Date();
-        const options = {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
+        const timeString = now.toLocaleTimeString('en-US', {
             hour: '2-digit',
             minute: '2-digit',
-            second: '2-digit',
             timeZone: 'Asia/Manila'
-        };
-        const dateTimeString = now.toLocaleDateString('en-US', options);
-        const dateTimeElement = document.getElementById('realtimeDateTime');
-        if (dateTimeElement) {
-            dateTimeElement.textContent = dateTimeString;
+        });
+        const dateElement = document.getElementById('realtimeDateTime');
+        if (dateElement) {
+            dateElement.textContent = `Updated: ${timeString}`;
         }
     }
 
