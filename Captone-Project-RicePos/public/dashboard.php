@@ -168,8 +168,12 @@ $topRows = $topStmt->fetchAll();
     .kpi-summary { background: linear-gradient(135deg, #fefce8 0%, #e0f2fe 100%); border-color: #fde68a; }
     .kpi-summary .kpi-icon { background: linear-gradient(135deg,#f59e0b,#2563eb); color: white; }
     
-    .kpi-deliveries { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-color: #e2e8f0; }
-    .kpi-deliveries .kpi-icon { background: #64748b; color: white; }
+    .kpi-deliveries { background: linear-gradient(135deg, #eef2ff 0%, #e0f2fe 55%, #ecfeff 100%); border-color: #c7d2fe; }
+    .kpi-deliveries .kpi-icon { background: linear-gradient(135deg, #2563eb, #06b6d4); color: #fff; }
+    .kpi-deliveries .badge { border:1px solid transparent; }
+    .kpi-deliveries .badge-pending { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); color:#7f1d1d; border-color:#fecaca; }
+    .kpi-deliveries .badge-transit { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color:#1e3a8a; border-color:#bfdbfe; }
+    .kpi-deliveries .badge-delivered { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); color:#065f46; border-color:#bbf7d0; }
     .section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.6rem; margin-bottom: 0.6rem; align-items: start; }
     .left-col { display:flex; flex-direction:column; gap:0.6rem; }
     .left-subgrid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.6rem; }
@@ -224,9 +228,9 @@ $topRows = $topStmt->fetchAll();
                     <div class="kpi-title">Deliveries</div>
                 </div>
                 <div class="kpi-value">
-                    <span class="badge" style="background:#fee2e2;color:#991b1b;border:1px solid #fecaca;">Pending: <?php echo (int)$deliveryCounts['pending']; ?></span>
-                    <span class="badge" style="background:#dbeafe;color:#1e40af;border:1px solid #bfdbfe; margin-left:6px;">In Transit: <?php echo (int)$deliveryCounts['out_for_delivery']; ?></span>
-                    <span class="badge" style="background:#dcfce7;color:#166534;border:1px solid #bbf7d0; margin-left:6px;">Delivered: <?php echo (int)$deliveryCounts['delivered']; ?></span>
+                    <span class="badge badge-pending">Pending: <?php echo (int)$deliveryCounts['pending']; ?></span>
+                    <span class="badge badge-transit" style="margin-left:6px;">In Transit: <?php echo (int)$deliveryCounts['out_for_delivery']; ?></span>
+                    <span class="badge badge-delivered" style="margin-left:6px;">Delivered: <?php echo (int)$deliveryCounts['delivered']; ?></span>
                 </div>
             </div>
         </div>

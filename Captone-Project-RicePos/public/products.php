@@ -121,12 +121,14 @@ $products = $productObj->getAll();
                         <div class="col-md-2">
                             <input type="number" step="1" min="0" name="profit_per_sack" class="form-control" placeholder="Profit/Sack" value="<?php echo $editProduct['profit_per_sack'] ?? ''; ?>">
                         </div>
+					<!-- Force a new row on md+ so labels align cleanly -->
+					<div class="w-100 d-none d-md-block"></div>
                         <div class="col-md-1">
                             <input type="number" step="0.01" min="0" name="stock_kg" class="form-control" placeholder="Stock KG" value="<?php echo $editProduct['stock_kg'] ?? ''; ?>">
                         </div>
-                        <div class="col-md-1">
-                            <input type="number" step="0.01" min="0" name="stock_sack" class="form-control" placeholder="Stock Sack" value="<?php echo $editProduct['stock_sack'] ?? ''; ?>">
-                        </div>
+					<div class="col-md-1">
+						<input type="number" step="1" min="0" name="stock_sack" class="form-control" placeholder="Stock (Sacks)" value="<?php echo $editProduct['stock_sack'] ?? ''; ?>">
+					</div>
                         <div class="col-md-2">
                             <input type="text" name="category" class="form-control" placeholder="Category" value="<?php echo $editProduct['category'] ?? ''; ?>">
                         </div>

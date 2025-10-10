@@ -4,6 +4,7 @@ require_login();
 require_admin();
 require_once __DIR__ . '/../classes/Product.php';
 require_once __DIR__ . '/../classes/StockMovement.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 $productObj = new Product();
 $stockMove = new StockMovement();
@@ -20,13 +21,16 @@ $date = trim($_POST['movement_date'] ?? '');
 		$dt = date_create(str_replace('T', ' ', $date));
 		$dbDate = $dt ? $dt->format('Y-m-d H:i:s') : null;
 	}
-	$supplier = trim($_POST['supplier'] ?? '');
+	$supplierId = isset($_POST['supplier_id']) ? (int)$_POST['supplier_id'] : 0;
+	$supplierRow = $supplierId > 0 ? get_supplier_by_id($supplierId) : null;
+	$supplier = $supplierRow && isset($supplierRow['name']) ? trim((string)$supplierRow['name']) : '';
 	$reference = trim($_POST['reference_no'] ?? '');
 	$notes = trim($_POST['notes'] ?? '');
 	try {
 		if ($productId <= 0) { throw new RuntimeException('Please select a product.'); }
 		if ($qty <= 0) { throw new RuntimeException('Quantity must be greater than zero.'); }
-		$stockMove->recordStockIn($productId, $qty, $dbDate ?: null, $supplier !== '' ? $supplier : null, $reference !== '' ? $reference : null, $notes !== '' ? $notes : null);
+		if ($supplier === '') { throw new RuntimeException('Please select a supplier.'); }
+		$stockMove->recordStockIn($productId, $qty, $dbDate ?: null, $supplier, $reference !== '' ? $reference : null, $notes !== '' ? $notes : null);
 		$message = 'Stock-In recorded successfully!';
 		header('Location: stock_in.php?success=1');
 		exit;
@@ -36,6 +40,7 @@ $date = trim($_POST['movement_date'] ?? '');
 }
 
 $products = $productObj->getAll();
+$suppliers = get_all_suppliers();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -79,8 +84,13 @@ $products = $productObj->getAll();
 						<input type="datetime-local" class="form-control" id="movement_date" name="movement_date" value="<?php echo date('Y-m-d\TH:i'); ?>">
 					</div>
 					<div class="col-md-3">
-						<label class="form-label" for="supplier">Supplier (Optional)</label>
-						<input type="text" class="form-control" id="supplier" name="supplier" placeholder="e.g., ABC Rice Trading">
+						<label class="form-label" for="supplier_id">Supplier</label>
+						<select class="form-select" id="supplier_id" name="supplier_id" required>
+							<option value="">Select supplier</option>
+							<?php foreach (($suppliers ?? []) as $s): ?>
+								<option value="<?php echo (int)($s['supplier_id'] ?? 0); ?>">#<?php echo (int)($s['supplier_id'] ?? 0); ?> - <?php echo htmlspecialchars($s['name'] ?? ''); ?></option>
+							<?php endforeach; ?>
+						</select>
 					</div>
 					<div class="col-md-3">
 						<label class="form-label" for="reference_no">Reference No. (Optional)</label>

@@ -53,15 +53,30 @@ $moveDateCond = ($range==='daily'
         : "DATE_FORMAT(sm.movement_date,'%Y-%m')=DATE_FORMAT(CURDATE(),'%Y-%m')"));
 
 $byProdSql = "SELECT p.id, p.name,
-            COALESCE(SUM(CASE WHEN sm.type='in' AND (".$moveDateCond.") THEN sm.quantity_sack ELSE 0 END),0) AS in_sacks,
-            COALESCE(SUM(CASE WHEN sm.type='out' AND (".$moveDateCond.") THEN sm.quantity_sack ELSE 0 END),0) AS out_sacks,
-            COALESCE(SUM(CASE WHEN (".$salesDateCond.") THEN si.quantity_sack ELSE 0 END),0) AS sold_sacks,
+            COALESCE(ins.in_sacks, 0) AS in_sacks,
+            COALESCE(outs.out_sacks, 0) AS out_sacks,
+            COALESCE(salesq.sold_sacks, 0) AS sold_sacks,
             p.stock_sack AS remaining_sacks
      FROM products p
-     LEFT JOIN stock_movements sm ON sm.product_id=p.id
-     LEFT JOIN sale_items si ON si.product_id=p.id
-     LEFT JOIN sales s ON s.id=si.sale_id
-     GROUP BY p.id, p.name, p.stock_sack
+     LEFT JOIN (
+        SELECT sm.product_id, SUM(sm.quantity_sack) AS in_sacks
+        FROM stock_movements sm
+        WHERE sm.type='in' AND (".$moveDateCond.")
+        GROUP BY sm.product_id
+     ) AS ins ON ins.product_id = p.id
+     LEFT JOIN (
+        SELECT sm.product_id, SUM(sm.quantity_sack) AS out_sacks
+        FROM stock_movements sm
+        WHERE sm.type='out' AND (".$moveDateCond.")
+        GROUP BY sm.product_id
+     ) AS outs ON outs.product_id = p.id
+     LEFT JOIN (
+        SELECT si.product_id, SUM(si.quantity_sack) AS sold_sacks
+        FROM sale_items si
+        JOIN sales s ON s.id = si.sale_id
+        WHERE (".$salesDateCond.")
+        GROUP BY si.product_id
+     ) AS salesq ON salesq.product_id = p.id
      ORDER BY p.name";
 $byProd = $pdo->query($byProdSql)->fetchAll();
 ?>
@@ -87,8 +102,12 @@ $byProd = $pdo->query($byProdSql)->fetchAll();
                 <a class="btn btn-outline-secondary <?php echo $range==='monthly'?'active':''; ?>" href="?range=monthly">Monthly</a>
             </div>
             <div class="d-flex gap-2">
-                <a class="btn btn-outline-secondary btn-sm" href="export_logs.php?format=csv&action=stock_in">Export Stock-In CSV</a>
-                <a class="btn btn-outline-secondary btn-sm" href="export_logs.php?format=csv&action=stock_out">Export Stock-Out CSV</a>
+                <a class="btn btn-danger btn-sm" href="export_logs_pdf.php?action=stock_in" target="_blank" rel="noopener">
+                    <i class='bx bxs-file-pdf'></i> Export Stock-In PDF
+                </a>
+                <a class="btn btn-danger btn-sm" href="export_logs_pdf.php?action=stock_out" target="_blank" rel="noopener">
+                    <i class='bx bxs-file-pdf'></i> Export Stock-Out PDF
+                </a>
             </div>
         </div>
 
@@ -96,19 +115,19 @@ $byProd = $pdo->query($byProdSql)->fetchAll();
             <div class="col-md-4">
                 <div class="card"><div class="card-body">
                     <div class="text-muted">Total Sacks Sold</div>
-                    <div class="h4 m-0"><?php echo number_format((float)$sold['sacks_sold'], 2); ?></div>
+                    <div class="h4 m-0"><?php echo number_format((float)$sold['sacks_sold'], 0); ?></div>
                 </div></div>
             </div>
             <div class="col-md-4">
                 <div class="card"><div class="card-body">
                     <div class="text-muted">Remaining Stock (Sacks)</div>
-                    <div class="h4 m-0"><?php echo number_format((float)$remaining['sacks_remaining'], 2); ?></div>
+                    <div class="h4 m-0"><?php echo number_format((float)$remaining['sacks_remaining'], 0); ?></div>
                 </div></div>
             </div>
             <div class="col-md-4">
                 <div class="card"><div class="card-body">
                     <div class="text-muted">Wastage (Sacks)</div>
-                    <div class="h4 m-0"><?php echo number_format((float)$wastage['sacks_wasted'], 2); ?></div>
+                    <div class="h4 m-0"><?php echo number_format((float)$wastage['sacks_wasted'], 0); ?></div>
                 </div></div>
             </div>
         </div>
@@ -129,10 +148,10 @@ $byProd = $pdo->query($byProdSql)->fetchAll();
                         <?php foreach ($byProd as $row): ?>
                         <tr>
                             <td><?php echo '#'.(int)$row['id'].' '.htmlspecialchars($row['name']); ?></td>
-                            <td class="text-end"><?php echo number_format((float)$row['in_sacks'], 2); ?></td>
-                            <td class="text-end"><?php echo number_format((float)$row['out_sacks'], 2); ?></td>
-                            <td class="text-end"><?php echo number_format((float)$row['sold_sacks'], 2); ?></td>
-                            <td class="text-end"><?php echo number_format((float)$row['remaining_sacks'], 2); ?></td>
+                            <td class="text-end"><?php echo number_format((float)$row['in_sacks'], 0); ?></td>
+                            <td class="text-end"><?php echo number_format((float)$row['out_sacks'], 0); ?></td>
+                            <td class="text-end"><?php echo number_format((float)$row['sold_sacks'], 0); ?></td>
+                            <td class="text-end"><?php echo number_format((float)$row['remaining_sacks'], 0); ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>

@@ -99,7 +99,7 @@ if ($is_admin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_a
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Management - RicePOS</title>
+    <title>Inventory Stocks - RicePOS</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -184,8 +184,8 @@ if ($is_admin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_a
                         <input id="profit_per_sack" type="number" step="1" min="0" name="profit_per_sack" class="form-control" placeholder="e.g. 120" value="<?php echo isset($editProduct['profit_per_sack']) ? (int)$editProduct['profit_per_sack'] : ''; ?>">
                     </div>
                     <!-- Removed KG stock -->
-                    <div class="col-md-1">
-                        <label for="stock_sack" class="form-label">Stock (Sacks)</label>
+                    <div class="col-md-2">
+                        <label for="stock_sack" class="form-label text-nowrap">Stock (Sacks)</label>
                         <input id="stock_sack" type="number" step="1" min="0" name="stock_sack" class="form-control" placeholder="e.g. 50" value="<?php echo isset($editProduct['stock_sack']) ? (int)$editProduct['stock_sack'] : ''; ?>">
                     </div>
                     <div class="col-md-2">

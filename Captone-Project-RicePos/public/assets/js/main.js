@@ -137,20 +137,30 @@ document.addEventListener('DOMContentLoaded', function() {
             const parent = ctrl.parentNode;
             parent.insertBefore(wrap, ctrl);
             wrap.appendChild(ctrl);
-            // Determine label text
+            // Determine label text (skip generic fallback to avoid stray 'Field' labels)
             const lblText = ctrl.getAttribute('data-label')
                 || (ctrl.placeholder && ctrl.placeholder.trim())
                 || ctrl.getAttribute('aria-label')
                 || humanize(ctrl.getAttribute('name'))
-                || 'Field';
-            // Minimize placeholder to a single space to preserve :placeholder-shown
-            if (ctrl.tagName !== 'SELECT') {
-                ctrl.setAttribute('placeholder', ' ');
+                || '';
+            // Only add a floating label if we have a meaningful label text
+            if (lblText) {
+                if (ctrl.tagName !== 'SELECT') {
+                    // Minimize placeholder to a single space to preserve :placeholder-shown
+                    ctrl.setAttribute('placeholder', ' ');
+                }
+                const lbl = document.createElement('label');
+                lbl.textContent = lblText;
+                if (ctrl.id) lbl.setAttribute('for', ctrl.id);
+                wrap.appendChild(lbl);
+            } else {
+                // No label text could be derived; don't force-inject a generic label
+                // Move control back and remove wrapper to avoid layout side-effects
+                const parentNode = wrap.parentNode;
+                if (parentNode) parentNode.insertBefore(ctrl, wrap);
+                wrap.remove();
+                return;
             }
-            const lbl = document.createElement('label');
-            lbl.textContent = lblText;
-            if (ctrl.id) lbl.setAttribute('for', ctrl.id);
-            wrap.appendChild(lbl);
             // Background behind label to avoid border overlap
             wrap.style.setProperty('--float-bg', computeBg(ctrl));
             // Initial state
