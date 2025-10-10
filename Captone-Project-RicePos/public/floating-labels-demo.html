@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floating Labels Demo - RicePos</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f4f6fb;
+            padding: 2rem;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 2rem;
+        }
+        .demo-section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .demo-section:last-child {
+            border-bottom: none;
+        }
+        .demo-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .form-row .floating-field {
+            flex: 1;
+            min-width: 200px;
+        }
+        .btn {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #1d4ed8;
+        }
+        .btn-secondary {
+            background: #6b7280;
+        }
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        .code-block {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1 style="text-align: center; color: #1e293b; margin-bottom: 2rem;">Modern Floating Labels Demo</h1>
+        
+        <!-- Basic Input Fields -->
+        <div class="demo-section">
+            <h2 class="demo-title">Basic Input Fields</h2>
+            <form class="form-grid">
+                <div class="floating-field">
+                    <input type="text" id="name" name="name" placeholder=" " required>
+                    <label for="name">Full Name</label>
+                </div>
+                
+                <div class="floating-field">
+                    <input type="email" id="email" name="email" placeholder=" " required>
+                    <label for="email">Email Address</label>
+                </div>
+                
+                <div class="floating-field">
+                    <input type="tel" id="phone" name="phone" placeholder=" ">
+                    <label for="phone">Phone Number</label>
+                </div>
+                
+                <div class="floating-field">
+                    <input type="password" id="password" name="password" placeholder=" " required>
+                    <label for="password">Password</label>
+                </div>
+                
+                <div class="floating-field">
+                    <input type="number" id="age" name="age" placeholder=" " min="0" max="120">
+                    <label for="age">Age</label>
+                </div>
+                
+                <div class="floating-field">
+                    <input type="date" id="birthdate" name="birthdate" placeholder=" ">
+                    <label for="birthdate">Birth Date</label>
+                </div>
+            </form>
+        </div>
+
+        <!-- Select and Textarea -->
+        <div class="demo-section">
+            <h2 class="demo-title">Select Dropdowns and Textarea</h2>
+            <form class="form-grid">
+                <div class="floating-field">
+                    <select id="country" name="country" required>
+                        <option value="">Select Country</option>
+                        <option value="ph">Philippines</option>
+                        <option value="us">United States</option>
+                        <option value="uk">United Kingdom</option>
+                        <option value="ca">Canada</option>
+                    </select>
+                    <label for="country">Country</label>
+                </div>
+                
+                <div class="floating-field">
+                    <select id="role" name="role" required>
+                        <option value="">Select Role</option>
+                        <option value="admin">Administrator</option>
+                        <option value="staff">Staff</option>
+                        <option value="delivery">Delivery Staff</option>
+                    </select>
+                    <label for="role">User Role</label>
+                </div>
+                
+                <div class="floating-field" style="grid-column: 1 / -1;">
+                    <textarea id="message" name="message" rows="4" placeholder=" "></textarea>
+                    <label for="message">Message</label>
+                </div>
+            </form>
+        </div>
+
+        <!-- Form States -->
+        <div class="demo-section">
+            <h2 class="demo-title">Form States</h2>
+            <form class="form-grid">
+                <div class="floating-field">
+                    <input type="text" id="normal" name="normal" placeholder=" " value="Normal State">
+                    <label for="normal">Normal State</label>
+                </div>
+                
+                <div class="floating-field error">
+                    <input type="text" id="error" name="error" placeholder=" " value="Error State">
+                    <label for="error">Error State</label>
+                    <div class="helper-text">This field has an error</div>
+                </div>
+                
+                <div class="floating-field success">
+                    <input type="text" id="success" name="success" placeholder=" " value="Success State">
+                    <label for="success">Success State</label>
+                    <div class="helper-text">This field is valid</div>
+                </div>
+                
+                <div class="floating-field">
+                    <input type="text" id="disabled" name="disabled" placeholder=" " value="Disabled State" disabled>
+                    <label for="disabled">Disabled State</label>
+                </div>
+                
+                <div class="floating-field required">
+                    <input type="text" id="required" name="required" placeholder=" " required>
+                    <label for="required">Required Field</label>
+                </div>
+            </form>
+        </div>
+
+        <!-- Responsive Layout -->
+        <div class="demo-section">
+            <h2 class="demo-title">Responsive Layout</h2>
+            <form>
+                <div class="form-row">
+                    <div class="floating-field">
+                        <input type="text" id="first-name" name="first_name" placeholder=" ">
+                        <label for="first-name">First Name</label>
+                    </div>
+                    <div class="floating-field">
+                        <input type="text" id="last-name" name="last_name" placeholder=" ">
+                        <label for="last-name">Last Name</label>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="floating-field">
+                        <input type="text" id="city" name="city" placeholder=" ">
+                        <label for="city">City</label>
+                    </div>
+                    <div class="floating-field">
+                        <input type="text" id="zip" name="zip" placeholder=" ">
+                        <label for="zip">ZIP Code</label>
+                    </div>
+                    <div class="floating-field">
+                        <select id="state" name="state">
+                            <option value="">Select State</option>
+                            <option value="metro">Metro Manila</option>
+                            <option value="luzon">Luzon</option>
+                            <option value="visayas">Visayas</option>
+                            <option value="mindanao">Mindanao</option>
+                        </select>
+                        <label for="state">State/Region</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Compact and Large Variants -->
+        <div class="demo-section">
+            <h2 class="demo-title">Size Variants</h2>
+            <form class="form-grid">
+                <div class="floating-field compact">
+                    <input type="text" id="compact" name="compact" placeholder=" ">
+                    <label for="compact">Compact Size</label>
+                </div>
+                
+                <div class="floating-field">
+                    <input type="text" id="normal-size" name="normal_size" placeholder=" ">
+                    <label for="normal-size">Normal Size</label>
+                </div>
+                
+                <div class="floating-field large">
+                    <input type="text" id="large" name="large" placeholder=" ">
+                    <label for="large">Large Size</label>
+                </div>
+            </form>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="demo-section">
+            <h2 class="demo-title">Form Actions</h2>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button type="button" class="btn" onclick="validateForm()">Validate Form</button>
+                <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear Form</button>
+                <button type="button" class="btn btn-secondary" onclick="fillForm()">Fill Sample Data</button>
+            </div>
+        </div>
+
+        <!-- HTML Structure Example -->
+        <div class="demo-section">
+            <h2 class="demo-title">HTML Structure</h2>
+            <p>Here's the basic HTML structure for floating label fields:</p>
+            <div class="code-block">
+&lt;div class="floating-field"&gt;
+    &lt;input type="text" id="field-name" name="field_name" placeholder=" " required&gt;
+    &lt;label for="field-name"&gt;Field Label&lt;/label&gt;
+&lt;/div&gt;
+            </div>
+            
+            <h3 style="margin-top: 1.5rem; color: #374151;">Key Points:</h3>
+            <ul style="color: #6b7280; line-height: 1.6;">
+                <li>Use <code>placeholder=" "</code> (space) to trigger floating behavior</li>
+                <li>Always include <code>for</code> attribute on labels matching input <code>id</code></li>
+                <li>Add <code>required</code> attribute for required fields</li>
+                <li>Use <code>floating-field</code> class as container</li>
+                <li>JavaScript automatically handles label floating and select value detection</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function validateForm() {
+            const fields = document.querySelectorAll('.floating-field input, .floating-field select, .floating-field textarea');
+            fields.forEach(field => {
+                const container = field.closest('.floating-field');
+                if (field.hasAttribute('required') && !field.value.trim()) {
+                    validateFloatingField(container, false, 'This field is required');
+                } else if (field.value.trim()) {
+                    validateFloatingField(container, true, 'Field is valid');
+                } else {
+                    validateFloatingField(container, null);
+                }
+            });
+        }
+
+        function clearForm() {
+            const fields = document.querySelectorAll('.floating-field input, .floating-field select, .floating-field textarea');
+            fields.forEach(field => {
+                field.value = '';
+                const container = field.closest('.floating-field');
+                validateFloatingField(container, null);
+            });
+        }
+
+        function fillForm() {
+            const sampleData = {
+                'name': 'John Doe',
+                'email': 'john.doe@example.com',
+                'phone': '+63 912 345 6789',
+                'password': 'securepassword123',
+                'age': '28',
+                'birthdate': '1995-06-15',
+                'country': 'ph',
+                'role': 'staff',
+                'message': 'This is a sample message to demonstrate the floating label behavior with textarea.',
+                'first-name': 'John',
+                'last-name': 'Doe',
+                'city': 'Manila',
+                'zip': '1000',
+                'state': 'metro',
+                'compact': 'Compact field',
+                'normal-size': 'Normal field',
+                'large': 'Large field'
+            };
+
+            Object.entries(sampleData).forEach(([id, value]) => {
+                const field = document.getElementById(id);
+                if (field) {
+                    field.value = value;
+                    // Trigger change event for select elements
+                    if (field.tagName === 'SELECT') {
+                        field.dispatchEvent(new Event('change'));
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
