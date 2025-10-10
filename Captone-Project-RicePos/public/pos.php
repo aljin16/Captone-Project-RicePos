@@ -46,7 +46,8 @@ $saleError = '';
         ];
         $total += $price;
     }
-    $payment = intval($_POST['payment']);
+    // Strip commas from payment before converting to integer
+    $payment = intval(str_replace(',', '', $_POST['payment'] ?? '0'));
     $change = $payment - $total;
     // Validate customer name and email (email optional)
     $buyer_name = trim($_POST['buyer_name'] ?? '');
@@ -287,7 +288,7 @@ $products = $productObj->getAll();
                         <div class="totals">
                             <div class="tot-row"><span>Total</span><input type="text" id="total" name="total" readonly value="0"></div>
                             <div class="tot-row"><span>Payment</span><input type="text" inputmode="numeric" name="payment" id="payment" placeholder="0"></div>
-                            <div class="tot-row"><span>Change</span><input type="text" id="change" name="change" readonly value="0"></div>
+                            <div class="tot-row"><span style="color: #dc2626;">Change</span><input type="text" id="change" name="change" readonly value="0"></div>
                         </div>
                         <div class="cart-footer">
                             <button type="submit" id="processSaleBtn" class="btn cta-btn process-cta"><i class='bx bx-receipt'></i> Process Sale</button>

@@ -68,7 +68,8 @@ $saleSuccess = false; $saleError = '';
             $items[] = ['product_id'=>$pid, 'quantity_kg'=>$qty_kg, 'quantity_sack'=>$qty_sack, 'price'=>$price];
             $total += $price;
         }
-        $payment = intval($_POST['payment'] ?? 0);
+        // Strip commas from payment before converting to integer
+        $payment = intval(str_replace(',', '', $_POST['payment'] ?? '0'));
         $change = $payment - $total;
         if (!$saleError && $total > 0 && $payment >= $total) {
             $pdo->beginTransaction();
@@ -425,7 +426,7 @@ $products = $productObj->getAll();
                             <div class="totals">
                             <div class="tot-row"><span>Total</span><input type="text" id="total" name="total" readonly value="0"></div>
                             <div class="tot-row"><span>Payment</span><input type="text" inputmode="numeric" name="payment" id="payment" placeholder="0"></div>
-                            <div class="tot-row"><span>Change</span><input type="text" id="change" name="change" readonly value="0"></div>
+                            <div class="tot-row"><span style="color: #dc2626;">Change</span><input type="text" id="change" name="change" readonly value="0"></div>
                         </div>
                         <div class="cart-footer">
                             <button type="submit" id="processDeliveryBtn" class="btn cta-btn process-cta"><i class='bx bx-send'></i> Review and Process Delivery</button>
