@@ -186,9 +186,14 @@ $products = $productObj->getAll();
     .process-cta:hover { background: linear-gradient(135deg,var(--brand-600),#1e40af); border-color: #1e40af; color: #fff; }
     .process-cta:active { transform: translateY(1px); }
     .process-cta:focus { outline: 2px solid #bfdbfe; outline-offset: 2px; }
-    .form-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem; }
-    .form-grid textarea { grid-column: span 2; }
-    input[type="text"], input[type="tel"], textarea { padding: 0.55rem; border:1px solid #dbeafe; border-radius:6px; width:100%; }
+    /* Customer toolbar layout (match mock: 2 columns, equal spacing) */
+    .form-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-grid .full { grid-column: span 2; }
+    /* Pill-shaped controls */
+    input[type="text"], input[type="tel"], input[type="email"], .form-grid input[type="number"] {
+        height: 56px; padding: 0 1.1rem; border:1px solid #e5e7eb; border-radius:9999px; background:#fff; width:100%; font-size:1rem;
+    }
+    textarea#customerAddress { padding: 0.9rem 1.1rem; border:1px solid #e5e7eb; border-radius:20px; background:#fff; width:100%; font-size:1rem; }
     .map-wrap { margin-top: 0.8rem; background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding: 0.6rem; }
     #deliveryMap { width: 100%; height: 360px; border-radius: 10px; }
     .geo-suggest { position: relative; }
@@ -329,13 +334,13 @@ $products = $productObj->getAll();
             <form method="post" id="deliveryForm" autocomplete="off">
                 <div class="form-grid">
                     <input type="text" name="customer_name" placeholder="Customer Name" required>
-                    <input type="email" name="customer_email" aria-label="Customer Email (optional)" autocomplete="email" inputmode="email" style="grid-column: span 2;">
-                    <input type="tel" name="customer_phone" placeholder="Phone (optional)">
-                    <div class="geo-suggest" style="grid-column: span 2;">
+                    <input type="email" name="customer_email" placeholder="Email (E-Receipt)" aria-label="Customer Email (optional)" autocomplete="email" inputmode="email">
+                    <input type="tel" name="customer_phone" placeholder="Phone No.">
+                    <input type="text" name="notes" placeholder="Notes">
+                    <div class="geo-suggest full">
                         <textarea name="customer_address" id="customerAddress" placeholder="Full Address (type to search)" rows="3" required></textarea>
                         <div id="addrResults" class="geo-results" style="display:none;"></div>
                     </div>
-                    <textarea name="notes" placeholder="Notes (optional)" rows="2" style="grid-column: span 2;"></textarea>
                     <input type="hidden" name="customer_lat" id="customerLat">
                     <input type="hidden" name="customer_lng" id="customerLng">
                     <input type="hidden" name="route_json" id="routeJson">

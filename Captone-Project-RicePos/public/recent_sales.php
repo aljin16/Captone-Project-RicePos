@@ -58,23 +58,20 @@ if (isset($_GET['ajax']) && (int)$_GET['ajax'] === 1) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recent Sales - RicePOS</title>
-  <link rel="stylesheet" href="assets/css/style.css">
+  <?php $__cssv = @filemtime(__DIR__.'/assets/css/style.css') ?: time(); ?>
+  <link rel="stylesheet" href="assets/css/style.css?v=<?php echo $__cssv; ?>">
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <style>
     *,*::before,*::after{ box-sizing:border-box; }
     html,body{ height:100%; }
     body{ display:block; min-height:100vh; margin:0; background:#f7f9fc; color:#111827; overflow-x:hidden; }
-    /* Use shared .main-content sizing from assets/css/style.css for consistent sidebar/header layout */
     .table-card{ background:#fff; border:1px solid #e5e7eb; border-radius:14px; box-shadow:0 8px 24px rgba(17,24,39,0.06); overflow:hidden; }
     .table-scroll{ overflow:auto; }
     .user-table{ width:100%; border-collapse:separate; border-spacing:0; min-width:720px; }
     .user-table thead th{ position:sticky; top:0; background:linear-gradient(180deg,#f8fafc 0%, #eef2ff 100%); color:#1f2937; font-weight:700; font-size:0.92rem; text-align:left; padding:0.75rem 0.9rem; border-bottom:1px solid #e5e7eb; }
     .user-table tbody td{ padding:0.7rem 0.9rem; border-bottom:1px solid #eef2f7; }
-    .toolbar{ display:flex; align-items:center; justify-content:flex-start; gap:0.6rem; margin-bottom:0.8rem; flex-wrap:wrap; }
-    .toolbar input, .toolbar select{ padding:0.7rem 0.9rem; border:1px solid #dbeafe; border-radius:8px; font-size:1rem; margin-top:0.5rem; }
-    .toolbar .btn{ padding:0.7rem 1rem; font-size:1rem; margin-top:0.5rem; }
     .pagination{ display:flex; gap:0.35rem; margin-top:0.8rem; }
-    .pagination a{ padding:0.3rem 0.6rem; border:1px solid #d1d5db; border-radius:6px; text-decoration:none; color:#111827; }
+    .pagination a{ padding:0.3rem 0.6rem; border:1px solid #d1d5db; border-radius:10px; text-decoration:none; color:#111827; }
     .pagination .active{ background:#e5e7eb; }
   </style>
 </head>
@@ -83,10 +80,16 @@ if (isset($_GET['ajax']) && (int)$_GET['ajax'] === 1) {
   <main class="main-content">
     
     <div class="toolbar">
-      <form method="get" style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
-        <input type="text" name="q" placeholder="Search TXN ID" value="<?php echo htmlspecialchars($q); ?>">
-        <input type="date" name="day" value="<?php echo htmlspecialchars($day); ?>" aria-label="Filter by day">
-        <button class="btn" type="submit">Filter</button>
+      <form method="get" class="toolbar" style="margin:0;">
+        <div class="toolbar-item">
+          <label for="q">Transaction</label>
+          <input id="q" type="text" name="q" placeholder="Search TXN ID" value="<?php echo htmlspecialchars($q); ?>">
+        </div>
+        <div class="toolbar-item">
+          <label for="day">Day</label>
+          <input id="day" type="date" name="day" value="<?php echo htmlspecialchars($day); ?>" aria-label="Filter by day">
+        </div>
+        <button class="btn btn-primary" type="submit">Search</button>
         <?php if ($q !== '' || $day !== ''): ?>
           <a class="btn" href="recent_sales.php">Clear</a>
         <?php endif; ?>

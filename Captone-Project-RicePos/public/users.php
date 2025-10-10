@@ -98,33 +98,39 @@ $users = get_all_users();
     body { display: block; min-height: 100vh; margin: 0; background: #f4f6fb; }
     /* Use shared .main-content sizing from assets/css/style.css for consistent sidebar/header layout */
     .main-content { background: #f4f6fb; min-height: 100vh; }
-    .user-form { 
-        display: grid; 
-        grid-template-columns: repeat(5, minmax(140px, 1fr)); 
-        gap: 0.6rem; 
-        align-items: end;
-    }
-    .user-form input, .user-form select { padding: 0.45rem 0.55rem; font-size: 0.95rem; border:1px solid #dbeafe; border-radius:8px; }
-    .user-form .form-actions { grid-column: 1 / -1; display: flex; gap: 0.5rem; align-items: center; }
+    .user-form { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; align-items: end; }
+    .user-form input, .user-form select { width:100%; padding: 0 1rem; height: 48px; font-size: 1rem; border:1px solid #e5e7eb; border-radius: 9999px; background:#fff; }
+    .user-form input:focus, .user-form select:focus { outline:none; border-color:#c7d2fe; box-shadow: 0 0 0 0.12rem rgba(147,197,253,0.28); }
+    .user-form .form-actions { display: block; }
     @media (max-width: 700px) { .main-content { padding: 1.2rem 0.5rem 1.2rem 0.5rem; } }
     .table-card{ background:#fff; border:1px solid #e5e7eb; border-radius:14px; box-shadow:0 8px 24px rgba(17,24,39,0.06); overflow:hidden; }
     .table-scroll{ overflow:auto; }
     .user-table{ width:100%; border-collapse:separate; border-spacing:0; min-width: 720px; }
     .user-table thead th{ position:sticky; top:0; background:linear-gradient(180deg,#f8fafc 0%, #eef2ff 100%); color:#1f2937; font-weight:700; font-size:0.92rem; text-align:left; padding:0.75rem 0.9rem; border-bottom:1px solid #e5e7eb; }
     .user-table tbody td{ padding:0.7rem 0.9rem; border-bottom:1px solid #eef2f7; }
-    /* Disable hover effects for action buttons on this page */
-    .user-form .btn, .user-table .btn { transition:none !important; }
-    .user-form .btn:hover, .user-table .btn:hover { transform:none !important; box-shadow:none !important; filter:none !important; }
-    /* Static button styling with colored text and bold labels */
-    .user-form .btn.btn-add, .user-table .btn.btn-add {
-        background:#fff; border:1px solid #d1d5db; color:#16a34a; font-weight:700;
+    /* Unified, equal-size buttons (scoped to Users page) */
+    .user-form .btn, .user-table .btn {
+        height: 48px; min-width: initial; padding: 0 18px; border-radius: 9999px; font-weight: 700; display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%;
+        border: 1px solid #e5e7eb; background:#fff; color:#111827; box-shadow: 0 4px 12px rgba(17,24,39,0.06); transition: box-shadow .15s ease, background .15s ease, border-color .15s ease, transform .12s ease;
     }
-    .user-form .btn.btn-edit, .user-table .btn.btn-edit {
-        background:#fff; border:1px solid #d1d5db; color:#2563eb; font-weight:700;
-    }
-    .user-table .btn.btn-delete {
-        background:#fff; border:1px solid #d1d5db; color:#dc2626; font-weight:700;
-    }
+    .user-form .btn:hover, .user-table .btn:hover { background:#f8fafc; border-color:#d1d5db; box-shadow: 0 8px 18px rgba(17,24,39,0.08); transform: translateY(-1px); }
+    .user-form .btn:active, .user-table .btn:active { transform: translateY(0); box-shadow: 0 3px 8px rgba(17,24,39,0.06); }
+    /* Solid green Add button on form */
+    .user-form .btn.btn-add { background:#16a34a; color:#fff; border-color:#16a34a; box-shadow: 0 6px 14px rgba(22,163,74,0.22); }
+    .user-form .btn.btn-add:hover { background:#16a34a; border-color:#16a34a; box-shadow: 0 6px 14px rgba(22,163,74,0.22); transform:none; }
+    .user-form .btn.btn-add:active { background:#16a34a; }
+    /* Keep table action variants outlined */
+    .user-table .btn.btn-add { color:#16a34a; border-color:#bbf7d0; width:auto; }
+    .user-form .btn.btn-edit, .user-table .btn.btn-edit { color:#2563eb; border-color:#bfdbfe; }
+    .user-form .btn.btn-delete, .user-table .btn.btn-delete { color:#dc2626; border-color:#fecaca; }
+    .user-form .btn.btn-add:hover, .user-table .btn.btn-add:hover { background:#16a34a; border-color:#16a34a; color:#fff; box-shadow: 0 6px 14px rgba(22,163,74,0.22); transform:none; }
+    .user-form .btn.btn-edit:hover, .user-table .btn.btn-edit:hover { background:#eff6ff; border-color:#93c5fd; }
+    .user-form .btn.btn-delete:hover, .user-table .btn.btn-delete:hover { background:#fef2f2; border-color:#fca5a5; }
+
+    /* Table actions cell uses flex to keep equal buttons aligned */
+    .user-table td.actions { white-space: nowrap; }
+    .user-table td.actions { display:flex; align-items:center; gap:0.5rem; }
+    .user-table td.actions form { display:inline; }
     </style>
     <script>
     function confirmDelete() {
@@ -207,7 +213,7 @@ $users = get_all_users();
                 <option value="active" <?php if ($edit_user['status']==='active') echo 'selected'; ?>>Active</option>
                 <option value="inactive" <?php if ($edit_user['status']==='inactive') echo 'selected'; ?>>Inactive</option>
             </select>
-            <div class="form-actions">
+            <div class="form-actions toolbar" style="justify-content:flex-start;">
                 <button type="submit" name="edit_user" class="btn btn-edit">
                     <i class='bx bx-edit'></i> Update User
                 </button>
@@ -233,7 +239,7 @@ $users = get_all_users();
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
             </select>
-            <div class="form-actions">
+            <div class="form-actions toolbar" style="justify-content:flex-start;">
                 <button type="submit" name="add_user" class="btn btn-add">
                     <i class='bx bx-plus'></i> Add User
                 </button>
@@ -269,7 +275,7 @@ $users = get_all_users();
                         <td><?php echo $user['status']; ?></td>
                         <td><?php echo $user['last_login'] ? $user['last_login'] : '-'; ?></td>
                         <td><?php echo $user['created_at']; ?></td>
-                        <td>
+                        <td class="actions">
                             <a href="users.php?edit=<?php echo $user['id']; ?>" class="btn btn-edit">
                                 <i class='bx bx-edit'></i> Edit
                             </a>
