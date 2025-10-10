@@ -189,11 +189,55 @@ $products = $productObj->getAll();
     /* Customer toolbar layout (match mock: 2 columns, equal spacing) */
     .form-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
     .form-grid .full { grid-column: span 2; }
-    /* Pill-shaped controls */
+    /* Pill-shaped controls - Enhanced with shadows and weight */
     input[type="text"], input[type="tel"], input[type="email"], .form-grid input[type="number"] {
-        height: 56px; padding: 0 1.1rem; border:1px solid #e5e7eb; border-radius:9999px; background:#fff; width:100%; font-size:1rem;
+        height: 56px; 
+        padding: 0 1.1rem; 
+        border: 2px solid #d1d5db; 
+        border-radius: 9999px; 
+        background: #fff; 
+        width: 100%; 
+        font-size: 1rem;
+        font-weight: 500;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+        transition: all 0.2s ease;
     }
-    textarea#customerAddress { padding: 0.9rem 1.1rem; border:1px solid #e5e7eb; border-radius:20px; background:#fff; width:100%; font-size:1rem; }
+    
+    input[type="text"]:hover, input[type="tel"]:hover, input[type="email"]:hover, .form-grid input[type="number"]:hover {
+        border-color: #9ca3af;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    input[type="text"]:focus, input[type="tel"]:focus, input[type="email"]:focus, .form-grid input[type="number"]:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 4px 12px rgba(59, 130, 246, 0.15);
+    }
+    
+    textarea#customerAddress { 
+        padding: 0.9rem 1.1rem; 
+        border: 2px solid #d1d5db; 
+        border-radius: 20px; 
+        background: #fff; 
+        width: 100%; 
+        font-size: 1rem;
+        font-weight: 500;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+        transition: all 0.2s ease;
+        resize: vertical;
+        min-height: 90px;
+    }
+    
+    textarea#customerAddress:hover {
+        border-color: #9ca3af;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    textarea#customerAddress:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 4px 12px rgba(59, 130, 246, 0.15);
+    }
     .map-wrap { margin-top: 0.8rem; background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding: 0.6rem; }
     #deliveryMap { width: 100%; height: 360px; border-radius: 10px; }
     .geo-suggest { position: relative; }
@@ -248,9 +292,14 @@ $products = $productObj->getAll();
         .main-content{ padding:1rem 0.8rem; }
         
         /* Form fields stacked */
-        .form-grid{ grid-template-columns:1fr; gap:0.6rem; }
-        .form-grid input, .form-grid textarea{ font-size:16px; padding:0.65rem; } /* 16px prevents zoom on iOS */
-        .form-grid textarea{ min-height:80px; }
+        .form-grid{ grid-template-columns:1fr; gap:0.8rem; }
+        .form-grid input, .form-grid textarea{ 
+            font-size:16px; 
+            padding:0.75rem 1rem; 
+            font-weight: 500;
+            border-width: 2px;
+        } /* 16px prevents zoom on iOS */
+        .form-grid textarea{ min-height:90px; }
         
         /* Product grid 2 columns */
         .product-grid{ grid-template-columns:repeat(2, 1fr); gap:0.7rem; }

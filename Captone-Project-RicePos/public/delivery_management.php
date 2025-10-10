@@ -104,11 +104,17 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
        Clean, professional, mobile-first design
        ============================================ */
     
-    /* Base Styles */
-    *, *::before, *::after { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body { display: block; min-height: 100vh; margin: 0; background: #f8fafc; overflow-x: hidden; }
-    .main-content { background: #f8fafc; min-height: 100vh; overflow-x: hidden; }
+    /* Base Styles - scoped to avoid conflicts with header */
+    .delivery-management-page {
+        background: #f8fafc;
+        overflow-x: hidden;
+    }
+    
+    .delivery-management-page .main-content { 
+        background: #f8fafc; 
+        min-height: 100vh; 
+        overflow-x: hidden; 
+    }
     
     /* Typography */
     .section-title {
@@ -132,7 +138,7 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
     
     .unified-dashboard {
         display: grid;
-        grid-template-columns: 70% 30%;
+        grid-template-columns: 30% 70%;
         gap: 1rem;
         margin-bottom: 1.5rem;
         background: white;
@@ -142,7 +148,7 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
         border: 1px solid #e2e8f0;
     }
     
-    /* Map Container (Left 70%) */
+    /* Map Container (Right 70%) */
     .map-container {
         display: flex;
         flex-direction: column;
@@ -203,7 +209,7 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
         border-radius: 0;
     }
     
-    /* Sidebar Panel (Right 30%) */
+    /* Sidebar Panel (Left 30%) */
     .sidebar-panel {
         display: flex;
         flex-direction: column;
@@ -393,16 +399,19 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
     .driver-info-sm {
         flex: 1;
         min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
     }
     
     .driver-name-sm {
         font-size: 0.875rem;
         font-weight: 700;
         color: #1e293b;
-        margin-bottom: 0.25rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        line-height: 1.3;
     }
     
     .driver-plate-sm {
@@ -411,14 +420,21 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
         background: #dcfce7;
         padding: 0.15rem 0.5rem;
         border-radius: 4px;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
         font-weight: 600;
-        margin-bottom: 0.25rem;
+        width: fit-content;
+        line-height: 1.3;
     }
     
     .driver-location-sm {
         font-size: 0.75rem;
         color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        line-height: 1.3;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -592,132 +608,351 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
         color: #059669;
     }
     
-    /* Table Styles */
-    .table-card {
-        background: #fff;
+    /* ============================================
+       MODERN DELIVERY CARDS DESIGN
+       ============================================ */
+    
+    .deliveries-container {
+        margin-bottom: 2rem;
+    }
+    
+    .deliveries-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding: 1.25rem;
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .deliveries-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .deliveries-title i {
+        font-size: 1.5rem;
+        color: #3b82f6;
+    }
+    
+    .deliveries-count {
+        background: #f1f5f9;
+        color: #64748b;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 16px;
+        border: 2px dashed #e2e8f0;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        color: #cbd5e1;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state h3 {
+        color: #475569;
+        font-size: 1.25rem;
+        margin: 0 0 0.5rem;
+    }
+    
+    .empty-state p {
+        color: #94a3b8;
+        margin: 0;
+    }
+    
+    /* Delivery Cards Grid */
+    .delivery-cards-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .delivery-card {
+        background: white;
         border: 1px solid #e2e8f0;
         border-radius: 16px;
         overflow: hidden;
+        transition: all 0.3s ease;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        margin-bottom: 1.5rem;
     }
     
-    .table-scroll {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+    .delivery-card:hover {
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
+        border-color: #cbd5e1;
     }
     
-    .user-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        min-width: 920px;
-    }
-    
-    .user-table thead th {
-        position: sticky;
-        top: 0;
-        background: #f8fafc;
-        color: #475569;
-        font-weight: 700;
-        font-size: 0.875rem;
-        letter-spacing: 0.025em;
-        text-align: left;
-        padding: 1rem;
-        border-bottom: 2px solid #e2e8f0;
-        text-transform: uppercase;
-    }
-    
-    .user-table tbody td {
-        padding: 1rem;
-        border-bottom: 1px solid #f1f5f9;
-        color: #1e293b;
-        background: #fff;
-        vertical-align: middle;
-        font-size: 0.9rem;
-    }
-    
-    .user-table tbody tr:hover td {
-        background: #f8fafc;
-    }
-    
-    .user-table tbody tr:last-child td {
-        border-bottom: none;
-    }
-    
-    .user-table tbody td:nth-child(1) {
-        color: #64748b;
-        font-variant-numeric: tabular-nums;
-        font-weight: 600;
-    }
-    
-    .user-table tbody td:nth-child(8) {
-        text-align: right;
-        font-variant-numeric: tabular-nums;
-        font-weight: 600;
-    }
-    
-    .user-table tbody td form {
+    /* Card Header */
+    .delivery-card-header {
         display: flex;
-        gap: 0.5rem;
+        justify-content: space-between;
         align-items: center;
+        padding: 1.25rem;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .delivery-header-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
         flex-wrap: wrap;
     }
     
-    .user-table tbody td select,
-    .user-table tbody td button {
-        padding: 0.4rem 0.75rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 6px;
+    .delivery-id {
         font-size: 0.875rem;
+        font-weight: 700;
+        color: #64748b;
+        background: white;
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
     }
     
-    .user-table tbody td button {
-        background: #3b82f6;
-        color: #fff;
-        border-color: #3b82f6;
+    .transaction-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.875rem;
         font-weight: 600;
-        cursor: pointer;
+        color: #3b82f6;
+        text-decoration: none;
         transition: all 0.2s ease;
     }
     
-    .user-table tbody td button:hover {
-        background: #2563eb;
+    .transaction-link:hover {
+        color: #2563eb;
+        gap: 0.5rem;
     }
     
-    /* Badges */
-    .badge {
-        display: inline-block;
-        padding: 0.35rem 0.75rem;
-        border-radius: 6px;
+    .transaction-link i {
+        font-size: 1rem;
+    }
+    
+    /* Status Badges */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
         font-size: 0.8rem;
-        font-weight: 600;
-        border: 1px solid;
-        text-transform: capitalize;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 2px solid;
     }
     
-    .b-pending {
+    .status-pending {
         background: #fef3c7;
         color: #92400e;
-        border-color: #fde68a;
+        border-color: #fbbf24;
     }
     
-    .b-transit {
+    .status-transit {
         background: #dbeafe;
         color: #1e40af;
-        border-color: #93c5fd;
+        border-color: #3b82f6;
     }
     
-    .b-delivered {
+    .status-delivered {
         background: #dcfce7;
         color: #166534;
-        border-color: #86efac;
+        border-color: #22c55e;
     }
     
-    .b-cancelled {
-        background: #f1f5f9;
+    .status-cancelled {
+        background: #fee2e2;
+        color: #991b1b;
+        border-color: #ef4444;
+    }
+    
+    /* Card Body */
+    .delivery-card-body {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .delivery-info-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .delivery-info-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+    
+    .delivery-info-group.full-width {
+        grid-column: 1 / -1;
+    }
+    
+    .delivery-info-group.align-right {
+        text-align: right;
+    }
+    
+    .delivery-info-group label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+    
+    .delivery-info-group label i {
+        font-size: 0.875rem;
+    }
+    
+    .info-value {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #1e293b;
+        line-height: 1.4;
+    }
+    
+    .info-time {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        font-weight: 500;
+    }
+    
+    .info-total {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #059669;
+        line-height: 1;
+    }
+    
+    /* Delivery Notes */
+    .delivery-notes {
+        background: #fef9e7;
+        border-left: 3px solid #f59e0b;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        display: flex;
+        align-items: start;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .delivery-notes i {
+        color: #d97706;
+        font-size: 1.1rem;
+        margin-top: 0.1rem;
+    }
+    
+    .delivery-notes span {
+        font-size: 0.875rem;
+        color: #92400e;
+        line-height: 1.5;
+        flex: 1;
+    }
+    
+    /* Card Footer */
+    .delivery-card-footer {
+        padding: 1rem 1.25rem;
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    
+    .status-update-form {
+        display: flex;
+        gap: 0.5rem;
+        flex: 1;
+        align-items: center;
+    }
+    
+    .status-select {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        font-size: 0.875rem;
+        font-weight: 600;
         color: #475569;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex: 1;
+        min-width: 140px;
+    }
+    
+    .status-select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .btn-update {
+        padding: 0.5rem 1.25rem;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        white-space: nowrap;
+    }
+    
+    .btn-update:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-view-route {
+        padding: 0.5rem 1rem;
+        background: white;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    
+    .btn-view-route:hover {
+        background: #f8fafc;
         border-color: #cbd5e1;
+        color: #1e293b;
+        transform: translateY(-1px);
     }
     
     /* Pagination */
@@ -752,7 +987,7 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
     /* Mobile Responsive */
     @media (max-width: 1200px) {
         .unified-dashboard {
-            grid-template-columns: 65% 35%;
+            grid-template-columns: 35% 65%;
         }
         
         .weather-forecast-compact {
@@ -832,13 +1067,45 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
             height: 350px;
         }
         
-        .user-table {
-            font-size: 0.85rem;
+        /* Card Responsive */
+        .deliveries-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
         }
         
-        .user-table thead th,
-        .user-table tbody td {
-            padding: 0.75rem 0.5rem;
+        .delivery-card-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .delivery-info-row {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+        
+        .delivery-info-group.align-right {
+            text-align: left;
+        }
+        
+        .delivery-card-footer {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .status-update-form {
+            flex-direction: column;
+        }
+        
+        .status-select {
+            width: 100%;
+        }
+        
+        .btn-update,
+        .btn-view-route {
+            width: 100%;
+            justify-content: center;
         }
     }
     
@@ -867,14 +1134,21 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
             font-size: 1.75rem;
         }
         
-        .table-scroll::after {
-            content: '← Scroll →';
-            display: block;
-            text-align: center;
-            padding: 0.75rem;
-            color: #94a3af;
-            font-size: 0.85rem;
-            background: #f8fafc;
+        .deliveries-title {
+            font-size: 1.1rem;
+        }
+        
+        .delivery-card {
+            border-radius: 12px;
+        }
+        
+        .delivery-card-header,
+        .delivery-card-body {
+            padding: 1rem;
+        }
+        
+        .info-total {
+            font-size: 1.25rem;
         }
     }
     
@@ -896,10 +1170,30 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
             height: 250px;
         }
     }
+    
     </style>
 </head>
-<body>
+<body class="delivery-management-page">
     <?php $activePage = 'delivery_management.php'; $pageTitle = 'Delivery Management'; include __DIR__ . '/../includes/sidebar.php'; include __DIR__ . '/../includes/header.php'; ?>
+    
+    <style>
+    /* Remove box from Active status and reduce text size */
+    .user-chip .status-badge {
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        font-size: 0.72rem !important;
+        font-weight: 700 !important;
+        color: #16a34a !important;
+        text-transform: none !important;
+    }
+    
+    .user-chip .sub {
+        font-size: 0.72rem !important;
+    }
+    </style>
+    
     <main class="main-content">
         
         <?php if ($message): ?>
@@ -910,47 +1204,30 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
         
         <!-- Unified Dashboard: Map + Weather + GPS (3-in-1 View) -->
         <div class="unified-dashboard">
-            <!-- Left: Interactive Map (70%) -->
-            <div class="map-container">
-                <div class="map-header">
-                    <h2 class="section-title">
-                        <i class='bx bx-map'></i> Live Delivery Map
-                    </h2>
-                    <div class="map-actions">
-                        <button class="btn-icon" onclick="refreshGPSData()" title="Refresh GPS">
-                            <i class='bx bx-refresh'></i>
-                        </button>
-                    </div>
-                </div>
-                <div id="mgmtMap" class="unified-map"></div>
-                <div id="mgmtSummary" class="route-summary"></div>
-                <div id="routeWeatherSummary" class="muted" style="margin-top:0.5rem;"></div>
-            </div>
-
-            <!-- Right: Weather + GPS Stacked (30%) -->
+            <!-- Left: Weather + GPS Stacked (30%) -->
             <div class="sidebar-panel">
-                <!-- Weather Panel (Compact) -->
+                <!-- Weather Panel (Compact) - On Top -->
                 <div class="mini-card weather-mini">
                     <div class="mini-card-header">
                         <div class="mini-icon weather-icon">
                             <i class='bx bxs-sun'></i>
-                        </div>
+        </div>
                         <div class="mini-title">
                             <h3>Weather</h3>
                             <p id="realtimeDateTime" class="mini-subtitle"></p>
                         </div>
                         <button class="btn-icon-sm" id="refreshOriginWeather" title="Refresh Weather">
                             <i class='bx bx-refresh'></i>
-                        </button>
-                    </div>
+                    </button>
+                </div>
                     <div id="currentWeather" class="current-weather">
                         <div class="current-temp">--°</div>
                         <div class="current-condition">Loading...</div>
                     </div>
                     <div id="originWeatherDaily" class="weather-forecast-compact"></div>
-                </div>
+            </div>
 
-                <!-- GPS Info Panel (Compact) -->
+                <!-- GPS Info Panel (Compact) - On Bottom -->
                 <div class="mini-card gps-mini">
                     <div class="mini-card-header">
                         <div class="mini-icon gps-icon">
@@ -962,35 +1239,52 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
                         </div>
                         <button class="btn-icon-sm" id="refreshGPS" title="Refresh GPS">
                             <i class='bx bx-refresh'></i>
-                        </button>
-                    </div>
+                    </button>
+                </div>
                     
                     <div class="driver-compact">
                         <div class="driver-avatar-sm">
                             <img src="assets/img/dce3d07b96a346beabc6721b41ba045c-removebg-preview.png" alt="Edgar">
-                        </div>
+                            </div>
                         <div class="driver-info-sm">
                             <div class="driver-name-sm">Edgar - Toyota Hilux</div>
-                            <div class="driver-plate-sm">ABC-123</div>
+                            <div class="driver-plate-sm">🚚 ABC-123</div>
                             <div id="gpsLocationText" class="driver-location-sm">📍 Resolving...</div>
+                            </div>
                         </div>
-                    </div>
 
                     <div class="quick-actions">
                         <button class="action-btn track-btn" onclick="trackRider('edgar')" title="Track">
                             <i class='bx bx-navigation'></i>
-                        </button>
+                            </button>
                         <button class="action-btn call-btn" onclick="contactRider('edgar')" title="Call">
                             <i class='bx bx-phone'></i>
-                        </button>
+                            </button>
                         <button class="action-btn maps-btn" onclick="openGoogleMaps()" title="Google Maps">
                             <i class='bx bx-map'></i>
-                        </button>
+                            </button>
                         <button class="action-btn setup-btn" onclick="showGPSInstructions()" title="Setup">
                             <i class='bx bx-info-circle'></i>
-                        </button>
+                            </button>
+                        </div>
                     </div>
                 </div>
+
+            <!-- Right: Interactive Map (70%) -->
+            <div class="map-container">
+                <div class="map-header">
+                    <h2 class="section-title">
+                        <i class='bx bx-map'></i> Live Delivery Map
+                    </h2>
+                    <div class="map-actions">
+                        <button class="btn-icon" onclick="refreshGPSData()" title="Refresh GPS">
+                            <i class='bx bx-refresh'></i>
+                        </button>
+            </div>
+        </div>
+                <div id="mgmtMap" class="unified-map"></div>
+                <div id="mgmtSummary" class="route-summary"></div>
+                <div id="routeWeatherSummary" class="muted" style="margin-top:0.5rem;"></div>
             </div>
         </div>
         <!-- Delivery Filters -->
@@ -1008,51 +1302,111 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
             <input type="text" name="q" placeholder="Search by name, address or TXN" value="<?php echo htmlspecialchars($q); ?>">
             <button class="btn" type="submit">Filter</button>
         </form>
-        <div class="table-card">
-          <div class="table-scroll">
-        <table class="user-table">
-            <thead><tr><th>ID</th><th>Date</th><th>Transaction</th><th>Customer</th><th>Phone</th><th>Address</th><th>Notes</th><th>Total</th><th>Status</th><?php echo ($role==='admin')?'<th>Actions</th>':''; ?></tr></thead>
-            <tbody>
-            <?php foreach ($rows as $d): ?>
-                <tr>
-                    <td><?php echo (int)$d['id']; ?></td>
-                    <td><?php echo htmlspecialchars($d['created_at']); ?></td>
-                    <td><a href="receipt.php?txn=<?php echo urlencode($d['transaction_id']); ?>" target="_blank"><?php echo htmlspecialchars($d['transaction_id']); ?></a></td>
-                    <td><?php echo htmlspecialchars($d['customer_name']); ?></td>
-                    <td><?php echo htmlspecialchars($d['customer_phone']); ?></td>
-                    <td><?php echo htmlspecialchars($d['customer_address']); ?></td>
-                    <td><?php echo htmlspecialchars($d['notes'] ?? ''); ?></td>
-                    <td>₱<?php echo number_format((float)$d['total_amount'],2); ?></td>
-                    <td>
-                        <?php
-                            $cls = $d['status']==='pending'?'b-pending':($d['status']==='out_for_delivery'?'b-transit':($d['status']==='delivered'?'b-delivered':'b-cancelled'));
-                        ?>
-                        <span class="badge <?php echo $cls; ?>"><?php echo htmlspecialchars($d['status']); ?></span>
-                    </td>
+        <!-- Redesigned Delivery Cards -->
+        <div class="deliveries-container">
+            <div class="deliveries-header">
+                <h2 class="deliveries-title">
+                    <i class='bx bx-package'></i> Recent Deliveries
+                </h2>
+                <div class="deliveries-count">
+                    <?php echo $totalRows; ?> <?php echo $totalRows === 1 ? 'order' : 'orders'; ?>
+                </div>
+            </div>
+
+            <?php if (empty($rows)): ?>
+                <div class="empty-state">
+                    <i class='bx bx-box'></i>
+                    <h3>No deliveries found</h3>
+                    <p>Try adjusting your filters or search criteria</p>
+        </div>
+            <?php else: ?>
+                <div class="delivery-cards-grid">
+                    <?php foreach ($rows as $d): 
+                        $statusClass = $d['status']==='pending'?'status-pending':($d['status']==='out_for_delivery'?'status-transit':($d['status']==='delivered'?'status-delivered':'status-cancelled'));
+                        $statusIcon = $d['status']==='pending'?'bx-time':($d['status']==='out_for_delivery'?'bx-cycling':($d['status']==='delivered'?'bx-check-circle':'bx-x-circle'));
+                        $statusText = $d['status']==='out_for_delivery'?'In Transit':ucfirst(str_replace('_', ' ', $d['status']));
+                    ?>
+                    <div class="delivery-card">
+                        <!-- Card Header -->
+                        <div class="delivery-card-header">
+                            <div class="delivery-header-left">
+                                <span class="delivery-id">#<?php echo (int)$d['id']; ?></span>
+                                <a href="receipt.php?txn=<?php echo urlencode($d['transaction_id']); ?>" target="_blank" class="transaction-link">
+                                    <i class='bx bx-receipt'></i> <?php echo htmlspecialchars($d['transaction_id']); ?>
+                                </a>
+                            </div>
+                            <div class="delivery-header-right">
+                                <span class="status-badge <?php echo $statusClass; ?>">
+                                    <i class='bx <?php echo $statusIcon; ?>'></i>
+                                    <?php echo $statusText; ?>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="delivery-card-body">
+                            <div class="delivery-info-row">
+                                <div class="delivery-info-group">
+                                    <label><i class='bx bx-user'></i> Customer</label>
+                                    <span class="info-value"><?php echo htmlspecialchars($d['customer_name']); ?></span>
+                                </div>
+                                <div class="delivery-info-group">
+                                    <label><i class='bx bx-calendar'></i> Date</label>
+                                    <span class="info-value"><?php echo date('M d, Y', strtotime($d['created_at'])); ?></span>
+                                    <span class="info-time"><?php echo date('g:i A', strtotime($d['created_at'])); ?></span>
+                                </div>
+                            </div>
+
+                            <div class="delivery-info-row">
+                                <div class="delivery-info-group full-width">
+                                    <label><i class='bx bx-map-pin'></i> Delivery Address</label>
+                                    <span class="info-value"><?php echo htmlspecialchars($d['customer_address']); ?></span>
+                                </div>
+                            </div>
+
+                            <div class="delivery-info-row">
+                                <div class="delivery-info-group">
+                                    <label><i class='bx bx-phone'></i> Contact</label>
+                                    <span class="info-value"><?php echo htmlspecialchars($d['customer_phone']); ?></span>
+                                </div>
+                                <div class="delivery-info-group align-right">
+                                    <label>Total Amount</label>
+                                    <span class="info-total">₱<?php echo number_format((float)$d['total_amount'],2); ?></span>
+                                </div>
+                            </div>
+
+                            <?php if (!empty($d['notes'])): ?>
+                            <div class="delivery-notes">
+                                <i class='bx bx-note'></i>
+                                <span><?php echo htmlspecialchars($d['notes']); ?></span>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Card Footer (Admin Actions) -->
                     <?php if ($role==='admin'): ?>
-                    <td>
-                        <form method="post" style="display:flex; gap:0.5rem; align-items:center; flex-wrap: wrap;">
+                        <div class="delivery-card-footer">
+                            <form method="post" class="status-update-form">
                             <input type="hidden" name="delivery_id" value="<?php echo (int)$d['id']; ?>">
-                            <select name="status" style="padding:0.4rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.875rem; background: #fff;">
+                                <select name="status" class="status-select">
                                 <option value="pending" <?php echo $d['status']==='pending'?'selected':''; ?>>Pending</option>
                                 <option value="out_for_delivery" <?php echo $d['status']==='out_for_delivery'?'selected':''; ?>>In Transit</option>
                                 <option value="delivered" <?php echo $d['status']==='delivered'?'selected':''; ?>>Delivered</option>
                                 <option value="cancelled" <?php echo $d['status']==='cancelled'?'selected':''; ?>>Cancelled</option>
                             </select>
-                            <button type="submit" name="update_delivery_status" style="padding:0.4rem 0.75rem; background:#3b82f6; color:#fff; border:1px solid #3b82f6; border-radius:6px; font-size:0.875rem; font-weight:600; cursor:pointer;">
-                                <i class='bx bx-check'></i> Update
+                                <button type="submit" name="update_delivery_status" class="btn-update">
+                                    <i class='bx bx-check'></i> Update Status
                             </button>
                         </form>
-                        <button style="margin-top:0.5rem; padding:0.4rem 0.75rem; background:#fff; color:#475569; border:1px solid #e2e8f0; border-radius:6px; font-size:0.875rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:0.25rem;" onclick="focusDelivery(<?php echo (int)$d['id']; ?>)">
+                            <button class="btn-view-route" onclick="focusDelivery(<?php echo (int)$d['id']; ?>)">
                             <i class='bx bx-map'></i> View Route
                         </button>
-                    </td>
+                        </div>
                     <?php endif; ?>
-                </tr>
+                    </div>
             <?php endforeach; ?>
-            </tbody>
-        </table>
           </div>
+            <?php endif; ?>
         </div>
 
         <?php if ($totalPages > 1): ?>
