@@ -7,7 +7,7 @@ $message = '';
 $editProduct = null;
 $is_admin = is_admin();
 
-// Handle add/edit/delete (admin only)
+// Handle add/edit/delete/toggle (admin only)
         if ($is_admin && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_product'])) {
         $name = $_POST['name'] ?? '';
@@ -28,8 +28,7 @@ $is_admin = is_admin();
         }
         if ($name && $price_sack !== null && $price_sack > 0 && in_array($category, $allowedCategories, true)) {
             $productObj->add($name, $price_kg, $price_sack, $stock_kg, $stock_sack, $category, $low_stock, $image, $profit_per_sack);
-            // Auto-hide if stock is zero
-            if ($stock_sack <= 0) { $productObj->setActive($this->pdo->lastInsertId() ?? 0, 0); }
+            // is_active is set automatically in Product::add based on stock_sack
             $message = 'Product added!';
             header('Location: inventory.php');
             exit;
@@ -69,37 +68,33 @@ $is_admin = is_admin();
         $message = 'Product deleted!';
         header('Location: inventory.php');
         exit;
+    } elseif (isset($_POST['toggle_active'])) {
+        $pid = (int)($_POST['id'] ?? 0);
+        $p = $productObj->getById($pid);
+        if ($p) {
+            if ((int)$p['stock_sack'] <= 0) {
+                $productObj->setActive($pid, 0);
+                $message = 'Product is out of stock and has been hidden.';
+            } else {
+                $productObj->setActive($pid, (int)!$p['is_active']);
+                $message = $p['is_active'] ? 'Product hidden.' : 'Product set to active.';
+            }
+        }
+        header('Location: inventory.php');
+        exit;
     }
 }
 if ($is_admin && isset($_GET['edit'])) {
     $editProduct = $productObj->getById(intval($_GET['edit']));
 }
 $products = $productObj->getAll();
-
-// Handle toggle visibility action
-if ($is_admin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_active'])) {
-    $pid = (int)($_POST['id'] ?? 0);
-    $p = $productObj->getById($pid);
-    if ($p) {
-        // If stock is zero, keep hidden; otherwise toggle
-        if ((int)$p['stock_sack'] <= 0) {
-            $productObj->setActive($pid, 0);
-            $message = 'Product is out of stock and has been hidden.';
-        } else {
-            $productObj->setActive($pid, (int)!$p['is_active']);
-            $message = $p['is_active'] ? 'Product hidden.' : 'Product set to active.';
-        }
-        header('Location: inventory.php');
-        exit;
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Stocks - RicePOS</title>
+    <title>Inventory Management  - RicePOS</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -240,6 +235,7 @@ if ($is_admin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_a
                             <span style="color: #ef4444;">🔴 Out of stock</span>
                         <?php endif; ?>
                     </div>
+                    <?php if ($is_admin): ?>
                     <div class="section actions-primary">
                         <?php $active = isset($p['is_active']) ? (int)$p['is_active'] : 1; ?>
                         <span class="status-pill <?php echo $active ? 'active' : 'hidden'; ?>"><?php echo $active ? 'Active' : 'Hidden'; ?></span>
@@ -249,6 +245,7 @@ if ($is_admin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_a
                             <button type="submit" class="btn btn-toggle btn-sm"><?php echo $active ? 'Hide in POS' : 'Activate'; ?></button>
                         </form>
                     </div>
+                    <?php endif; ?>
                     <?php if ($is_admin): ?>
                     <div class="section actions-secondary">
                         <a href="inventory.php?edit=<?php echo $p['id']; ?>" class="btn btn-sm btn-primary" style="white-space:nowrap;"><i class='bx bx-edit'></i> Edit</a>

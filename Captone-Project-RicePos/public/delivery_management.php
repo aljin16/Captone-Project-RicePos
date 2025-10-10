@@ -108,19 +108,19 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
     .filters { 
         display: grid; 
         grid-template-columns: auto 200px 1fr auto; 
-        gap: 0.8rem; 
+        gap: 0.6rem; 
         margin: 0.8rem 0; 
         align-items: center; 
         width: 100%;
-        padding: 0.4rem 0;
+        padding: 0.3rem 0;
     }
     .filters input, .filters select { 
-        padding: 0.65rem 1rem; 
+        padding: 0.4rem 0.8rem; 
         border: 1px solid #d1d5db; 
         border-radius: 999px; 
         background: #fff; 
-        font-size: 0.95rem; 
-        height: 46px;
+        font-size: 0.88rem; 
+        height: 36px;
         box-sizing: border-box;
         transition: all 0.2s ease;
     }
@@ -143,26 +143,25 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
         min-width: 320px; 
     }
     .filters .btn { 
-        padding: 0.7rem 1.4rem; 
+        padding: 0.35rem 0.8rem; 
         background: #3b82f6; 
         color: #fff; 
         border: none; 
-        border-radius: 10px; 
-        font-weight: 600; 
+        border-radius: 999px; 
+        font-weight: 700; 
         cursor: pointer; 
-        height: 44px;
+        height: 36px;
         white-space: nowrap;
         box-sizing: border-box;
-        transition: all 0.2s ease;
-        font-size: 0.95rem;
-        height : 50px;
+        transition: background 0.15s ease;
+        font-size: 0.85rem;
     }
-    .filters .btn:hover { 
-        background: #2563eb; 
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-    }
+    .filters .btn:hover { background: #2563eb; }
     .filter-group { display: contents; }
+    /* Top quick actions */
+    .top-actions { display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin:0.3rem 0 0.2rem; }
+    .btn-outline { background:#e5e7eb; color:#111827; border:1px solid #d1d5db; border-radius:999px; padding:0.4rem 0.8rem; font-size:0.88rem; font-weight:800; cursor:pointer; transition:all .15s ease; }
+    .btn-outline:hover { background:#dbeafe; border-color:#bfdbfe; }
     /* Visually hide the Status label but keep it accessible */
     .filters label[for="statusFilter"]{
         position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
@@ -176,7 +175,7 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
     .pagination a { padding:0.3rem 0.6rem; border:1px solid #d1d5db; border-radius:6px; text-decoration:none; color:#111827; }
     .pagination .active { background:#e5e7eb; }
      /* Modern table styles */
-     .table-card { background:#fff; border:1px solid #e5e7eb; border-radius:14px; box-shadow: 0 8px 24px rgba(17,24,39,0.06); overflow: hidden; }
+     .table-card { background:#fff; border:1px solid #e5e7eb; border-radius:14px; box-shadow: 0 6px 18px rgba(17,24,39,0.05); overflow: hidden; }
      .table-scroll { overflow:auto; }
      .user-table { width:100%; border-collapse: separate; border-spacing:0; min-width: 920px; }
     .user-table thead th { position: sticky; top:0; background: linear-gradient(180deg,#f8fafc 0%, #eef2ff 100%); color:#1f2937; font-weight:800; font-size:0.95rem; letter-spacing:0.3px; text-align:left; padding:0.9rem 1rem; border-bottom:1px solid #e5e7eb; }
@@ -192,21 +191,12 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
      .user-table tbody td:nth-child(9) { white-space: nowrap; }
      .table-toolbar { display:flex; align-items:center; justify-content:space-between; gap:0.6rem; margin: 0.5rem 0 0.6rem; }
     .map-panel { margin-top: 0.8rem; background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding: 0.6rem; }
-    #mgmtMap { width: 100%; height: 420px; border-radius: 10px; }
+    #mgmtMap { width: 100%; height: 360px; border-radius: 10px; }
     .route-summary { margin-top: 0.4rem; color:#111827; font-size: 1.05rem; font-weight: 700; }
     .route-summary .dist { color:#1d4ed8; }
     .route-summary .eta { color:#059669; }
     .btn.small { padding: 0.25rem 0.6rem; font-size: 0.9rem; }
-    .weather-forecast-icon {
-         animation: floatIcon 3.2s ease-in-out infinite alternate;
-        will-change: transform, filter;
-         filter: drop-shadow(0 6px 16px rgba(44,108,223,0.25));
-         transition: all 0.3s ease;
-         border-radius: 50%;
-         background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
-         padding: 8px;
-         box-shadow: 0 4px 20px rgba(44,108,223,0.15);
-     }
+    .weather-forecast-icon { animation:none; filter:none; border-radius:12px; background:#fff; padding:4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
      .weather-forecast-icon:hover {
          transform: scale(1.1) rotate(5deg);
          filter: drop-shadow(0 8px 24px rgba(44,108,223,0.35));
@@ -216,68 +206,23 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
          50% { transform: translateY(-12px) scale(1.05) rotate(2deg); filter: drop-shadow(0 16px 32px rgba(44,108,223,0.3)); }
          100% { transform: translateY(0) scale(1) rotate(0deg); filter: drop-shadow(0 6px 16px rgba(44,108,223,0.25)); }
      }
-     .weather-card {
-         background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
-         border-radius: 20px;
-         box-shadow: 0 8px 32px rgba(44,108,223,0.12), 0 2px 8px rgba(0,0,0,0.05);
-         padding: 1rem 0.8rem 1.2rem 0.8rem;
-         display: flex;
-         flex-direction: column;
-         align-items: center;
-         min-width: 0;
-         border: 1px solid rgba(44,108,223,0.08);
-         transition: all 0.3s ease;
-         position: relative;
-         overflow: hidden;
-     }
-     .weather-card::before {
-         content: '';
-         position: absolute;
-         top: 0;
-         left: 0;
-         right: 0;
-         height: 3px;
-         background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
-         border-radius: 20px 20px 0 0;
-     }
+     .weather-card { background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04); padding:0.6rem 0.5rem; display:flex; flex-direction:column; align-items:center; min-width:0; border:1px solid #eef2ff; transition:none; overflow:hidden; }
+     .weather-card::before { display:none; }
      .weather-card:hover {
          transform: translateY(-4px);
          box-shadow: 0 12px 40px rgba(44,108,223,0.18), 0 4px 12px rgba(0,0,0,0.08);
      }
-     .weather-day {
-         font-size: 1.05rem;
-         font-weight: 600;
-         color: #374151;
-         margin-bottom: 0.5rem;
-         text-transform: uppercase;
-         letter-spacing: 0.5px;
-     }
-     .weather-temp {
-         font-size: 1.2rem;
-         font-weight: 700;
-         letter-spacing: 0.8px;
-         background: linear-gradient(135deg, #1e40af, #3b82f6);
-         -webkit-background-clip: text;
-         -webkit-text-fill-color: transparent;
-         background-clip: text;
-         margin: 0.3rem 0;
-     }
-     .weather-rain {
-         font-size: 0.95rem;
-         color: #6b7280;
-         font-weight: 500;
-         background: rgba(59,130,246,0.1);
-         padding: 0.2rem 0.6rem;
-         border-radius: 12px;
-         border: 1px solid rgba(59,130,246,0.2);
-     }
-     .weather-grid {
-         display: grid;
-         grid-template-columns: repeat(7, 1fr);
-         gap: 1rem;
-         position: relative;
-         z-index: 1;
-     }
+     .weather-day { font-size: 0.9rem; font-weight: 700; color:#374151; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.4px; }
+     .weather-temp { font-size: 1rem; font-weight: 800; color:#1e40af; margin:0.2rem 0; }
+     .weather-rain { font-size: 0.85rem; color:#6b7280; font-weight:600; background:#eef2ff; padding:0.15rem 0.5rem; border-radius:999px; border:1px solid #e0e7ff; }
+     .weather-grid { display:grid; grid-template-columns: repeat(5, 1fr); gap:0.6rem; position:relative; z-index:1; }
+
+    /* Compact weather/GPS panels - neutral backgrounds, smaller footprint */
+    #originWeatherPanel, #gpsLocationPanel { background:#fff !important; border:1px solid #e5e7eb !important; border-radius:14px !important; box-shadow:0 4px 12px rgba(17,24,39,0.06) !important; }
+    #originWeatherPanel > svg, #gpsLocationPanel > svg { display:none !important; }
+    #gpsRidersList { max-height: 160px !important; }
+    .rider-avatar { width:36px; height:36px; font-size:1.2rem; }
+    .rider-actions .btn { padding:0.25rem 0.6rem; font-size:0.8rem; border-radius:10px; }
      .gps-rider-card {
          background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
          border-radius: 16px;
@@ -454,6 +399,10 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
     <main class="main-content">
         
         <?php if ($message): ?><div class="muted" style="margin-bottom:0.5rem;"><?php echo htmlspecialchars($message); ?></div><?php endif; ?>
+        <div class="top-actions">
+            <button class="btn-outline" type="button" onclick="document.getElementById('originWeatherPanel').scrollIntoView({behavior:'smooth', block:'start'});">Weather forecast</button>
+            <button class="btn-outline" type="button" onclick="document.getElementById('gpsLocationPanel').scrollIntoView({behavior:'smooth', block:'start'});">gps live location</button>
+        </div>
                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.2rem;">
              <!-- Weather Forecast Panel -->
              <div id="originWeatherPanel" class="card" style="box-shadow:0 8px 32px rgba(44,108,223,0.10),0 1.5px 0 rgba(255,255,255,0.4);border-radius:18px;overflow:hidden;position:relative;background:linear-gradient(120deg,rgba(44,108,223,0.13) 0%,rgba(255,255,255,0.85) 100%), url('https://www.transparenttextures.com/patterns/cubes.png');border:2.5px solid rgba(44,108,223,0.13);box-shadow:0 8px 32px rgba(44,108,223,0.13),0 1.5px 0 rgba(255,255,255,0.4),0 0 32px 0 rgba(44,108,223,0.08);">
@@ -523,6 +472,11 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
             <button class="btn" type="submit">Filter</button>
         </form>
 
+        <div class="map-panel">
+            <div id="mgmtMap"></div>
+            <div id="mgmtSummary" class="route-summary"></div>
+            <div id="routeWeatherSummary" class="muted" style="margin-top:0.5rem;"></div>
+        </div>
         <div class="table-card">
           <div class="table-scroll">
         <table class="user-table">
@@ -576,11 +530,6 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
             <?php endfor; ?>
         </div>
         <?php endif; ?>
-        <div class="map-panel">
-            <div id="mgmtMap"></div>
-            <div id="mgmtSummary" class="route-summary"></div>
-            <div id="routeWeatherSummary" class="muted" style="margin-top:0.5rem;"></div>
-        </div>
     </main>
     <script>
     const TILE_URL = <?php echo json_encode(LEAFLET_TILE_URL); ?>;
