@@ -110,7 +110,7 @@ $products = $productObj->getAll();
         display: grid; 
         grid-template-areas: 'products cart'; 
         grid-template-columns: 1fr 520px; 
-        gap: 1.5rem; 
+        gap: 1rem; 
         align-items: start;
         min-height: calc(100dvh - var(--header-height) - 2.4rem);
     }
@@ -163,16 +163,17 @@ $products = $productObj->getAll();
     .cart-header { display:flex; align-items:center; justify-content: space-between; gap: 0.5rem; font-weight: 700; margin-bottom: 0.6rem; }
     .cart-header .muted { font-weight: 500; color: #6b7280; }
     .cart-items { display: flex; flex-direction: column; gap: 0.6rem; max-height: 40vh; overflow: auto; border-bottom: 1px dashed #e5e7eb; padding-bottom: 0.5rem; }
-    .cart-row { display: grid; grid-template-columns: 44px 1fr 120px 110px 36px; gap: 0.6rem; align-items: center; }
+    .cart-row { display: grid; grid-template-columns: 44px 1fr 180px 110px 36px; gap: 0.6rem; align-items: center; }
     .cart-thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: #f8fafc; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
     .cart-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .cart-qty { text-align: center; }
     .cart-qty label { display:block; font-size: 0.72rem; color: #6b7280; margin-bottom: 2px; }
-    .cart-qty input { width: 100%; padding: 0.45rem; height: 38px; border:1px solid #dbeafe; border-radius: 8px; text-align: center; font-weight: 600; }
+    .cart-qty input { width: 100%; padding: 0.45rem; height: 38px; border:1px solid #dbeafe; border-radius: 0; text-align: center; font-weight: 600; }
+    .cart-qty-input { width: 70px !important; height: 48px !important; border: 2px solid #cbd5e1 !important; border-radius: 0 !important; text-align: center; font-weight: 700; font-size: 1.1rem; padding: 0.5rem 0.3rem !important; }
     .cart-sub { text-align: right; font-weight: 700; }
     .totals { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.6rem; }
     .tot-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; align-items: center; }
-    .tot-row input { width: 100%; padding: 0.6rem; height: 40px; border:1px solid #dbeafe; border-radius:8px; background:#f8fafc; text-align: center; font-weight: 700; }
+    .tot-row input { width: 100%; padding: 0.6rem; height: 40px; border:1px solid #dbeafe; border-radius:0; background:#f8fafc; text-align: center; font-weight: 700; }
     .cart-footer { margin-top: 0.75rem; border-top: 1px dashed #e5e7eb; padding-top: 0.75rem; display:flex; flex-direction: column; gap: 0.5rem; }
     .cta-btn { width: 100%; padding: 0.75rem 1rem; font-weight: 700; font-size: 1rem; border-radius: 10px; }
     .process-cta { background: linear-gradient(135deg,var(--brand),var(--brand-600)); color: #fff; border: 1px solid var(--brand-600); transition: background 0.18s, border-color 0.18s, transform 0.08s; }
@@ -190,17 +191,7 @@ $products = $productObj->getAll();
     .cart-header { display:flex; align-items:center; justify-content: space-between; gap: 0.5rem; font-weight: 700; margin-bottom: 0.6rem; }
     .cart-header .muted { font-weight: 500; color: #6b7280; }
     .cart-items { display: flex; flex-direction: column; gap: 0.6rem; flex: 0 1 auto; overflow: auto; border-bottom: 1px dashed #e5e7eb; padding-bottom: 0.5rem; max-height: calc(100dvh - var(--header-height) - 320px); }
-    .cart-row { display: grid; grid-template-columns: 44px 1fr 120px 110px 36px; gap: 0.6rem; align-items: center; }
-    .cart-thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: #f8fafc; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-    .cart-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .cart-qty { text-align: center; }
-    .cart-qty label { display:block; font-size: 0.72rem; color: #6b7280; margin-bottom: 2px; }
-    .cart-qty input { width: 100%; padding: 0.45rem; height: 38px; border:1px solid #dbeafe; border-radius: 8px; text-align: center; font-weight: 600; }
     /* Use global Delivery cart stepper styles from assets/css/style.css */
-    .cart-sub { text-align: right; font-weight: 700; }
-    .totals { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.6rem; }
-    .tot-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; align-items: center; }
-    .tot-row input { width: 100%; padding: 0.6rem; height: 40px; border:1px solid #dbeafe; border-radius:8px; background:#f8fafc; text-align: center; font-weight: 700; }
     .payment-shortcuts { display: flex; gap: 0.4rem; margin-top: 0.4rem; flex-wrap: wrap; }
     .payment-shortcut { padding: 0.4rem 0.6rem; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.15s ease; }
     .payment-shortcut:hover { background: #e2e8f0; border-color: #94a3b8; }
@@ -295,7 +286,7 @@ $products = $productObj->getAll();
                         </div>
                         <div class="totals">
                             <div class="tot-row"><span>Total</span><input type="text" id="total" name="total" readonly value="0"></div>
-                            <div class="tot-row"><span>Payment</span><input type="number" min="0" step="1" inputmode="numeric" pattern="\\d*" name="payment" id="payment" placeholder="0"></div>
+                            <div class="tot-row"><span>Payment</span><input type="text" inputmode="numeric" name="payment" id="payment" placeholder="0"></div>
                             <div class="tot-row"><span>Change</span><input type="text" id="change" name="change" readonly value="0"></div>
                         </div>
                         <div class="cart-footer">
@@ -353,7 +344,7 @@ $products = $productObj->getAll();
                         <button type="button" class="cart-plus" data-id="${item.id}" ${item.qtySack >= item.stockSack ? 'disabled' : ''}>+</button>
                     </div>
                 </div>
-                <div class="cart-sub">₱${subtotal.toFixed(0)}</div>
+                <div class="cart-sub">₱${subtotal.toLocaleString('en-PH', { maximumFractionDigits: 0 })}</div>
                 <button type="button" class="btn btn-delete cart-remove" data-id="${item.id}"><i class='bx bx-trash'></i></button>
             `;
             cartItemsEl.appendChild(row);
@@ -380,8 +371,9 @@ $products = $productObj->getAll();
         });
 
         document.getElementById('total').value = total.toLocaleString('en-PH', { maximumFractionDigits: 0 });
-        const payment = parseFloat(document.getElementById('payment').value) || 0;
-        document.getElementById('change').value = (payment - total).toLocaleString('en-PH', { maximumFractionDigits: 0 });
+        const payment = parseFloat((document.getElementById('payment').value || '0').toString().replace(/,/g, '')) || 0;
+        const change = Math.max(0, payment - total);
+        document.getElementById('change').value = change.toLocaleString('en-PH', { maximumFractionDigits: 0 });
         document.getElementById('cartCount').textContent = `(${count})`;
 
         // Bind row events after render
@@ -459,7 +451,14 @@ $products = $productObj->getAll();
         }
     });
 
-    document.getElementById('payment').addEventListener('input', renderCart);
+    // Enforce whole numbers in payment input and add comma formatting
+    const payEl = document.getElementById('payment');
+    payEl.addEventListener('input', () => {
+        const cleaned = (payEl.value || '').replace(/\D+/g, '');
+        const formatted = cleaned ? parseInt(cleaned).toLocaleString('en-PH') : '';
+        payEl.value = formatted;
+        renderCart();
+    });
     document.getElementById('clearCart').addEventListener('click', function() {
         cart.clear();
         renderCart();
@@ -471,7 +470,7 @@ $products = $productObj->getAll();
         form.addEventListener('submit', function (e) {
             e.preventDefault();
             const total = parseFloat((document.getElementById('total').value || '0').toString().replace(/,/g, '')) || 0;
-            const payment = parseFloat(document.getElementById('payment').value) || 0;
+            const payment = parseFloat((document.getElementById('payment').value || '0').toString().replace(/,/g, '')) || 0;
 
             if (total === 0) {
                 Swal.fire({ icon: 'warning', title: 'No Items Selected', text: 'Please select at least one item before processing the sale.' });

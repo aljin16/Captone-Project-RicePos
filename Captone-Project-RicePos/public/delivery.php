@@ -138,7 +138,7 @@ $products = $productObj->getAll();
     html, body { height: 100%; }
     body { display: block; min-height: 100vh; margin: 0; background: var(--bg); color: var(--ink); overflow-x: hidden; }
     .main-content { padding: 2.5rem 2.5rem 2.5rem 2rem; background: var(--bg); min-height: 100vh; overflow-x: hidden; }
-    .pos-layout { display: grid; grid-template-columns: 1fr 460px; gap: 1rem; }
+    .pos-layout { display: grid; grid-template-columns: 1fr 520px; gap: 1rem; }
     .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
     .product-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 0.8rem; display: flex; flex-direction: column; align-items: center; box-shadow: 0 8px 24px rgba(17,24,39,0.06); }
     .product-card .prod-img { width: 120px; height: 120px; object-fit: cover; border-radius: 10px; background: #f8fafc; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
@@ -166,12 +166,13 @@ $products = $productObj->getAll();
     .cart-header { display:flex; align-items:center; justify-content: space-between; gap: 0.5rem; font-weight: 700; margin-bottom: 0.6rem; }
     .cart-header .muted { font-weight: 500; color: #6b7280; }
     .cart-items { display: flex; flex-direction: column; gap: 0.6rem; max-height: 40vh; overflow: auto; border-bottom: 1px dashed #e5e7eb; padding-bottom: 0.5rem; }
-    .cart-row { display: grid; grid-template-columns: 44px 1fr 120px 110px 36px; gap: 0.6rem; align-items: center; }
+    .cart-row { display: grid; grid-template-columns: 44px 1fr 180px 110px 36px; gap: 0.6rem; align-items: center; }
     .cart-thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: #f8fafc; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
     .cart-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .cart-qty { text-align: center; }
     .cart-qty label { display:block; font-size: 0.72rem; color: #6b7280; margin-bottom: 2px; }
-    .cart-qty input { width: 100%; padding: 0.45rem; height: 38px; border:1px solid #dbeafe; border-radius: 8px; text-align: center; font-weight: 600; }
+    .cart-qty input { width: 100%; padding: 0.45rem; height: 38px; border:1px solid #dbeafe; border-radius: 0; text-align: center; font-weight: 600; }
+    .cart-qty-input { width: 70px !important; height: 48px !important; border: 2px solid #cbd5e1 !important; border-radius: 0 !important; text-align: center; font-weight: 700; font-size: 1.1rem; padding: 0.5rem 0.3rem !important; }
     .cart-sub { text-align: right; font-weight: 700; }
     .totals { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.6rem; }
     /* Hide spinners for number input (payment) */
@@ -179,7 +180,7 @@ $products = $productObj->getAll();
     input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     input[type=number] { -moz-appearance: textfield; }
     .tot-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; align-items: center; }
-    .tot-row input { width: 100%; padding: 0.6rem; height: 40px; border:1px solid #dbeafe; border-radius:8px; background:#f8fafc; text-align: center; font-weight: 700; }
+    .tot-row input { width: 100%; padding: 0.6rem; height: 40px; border:1px solid #dbeafe; border-radius:0; background:#f8fafc; text-align: center; font-weight: 700; }
     .cart-footer { margin-top: 0.75rem; border-top: 1px dashed #e5e7eb; padding-top: 0.75rem; display:flex; flex-direction: column; gap: 0.5rem; }
     .cta-btn { width: 100%; padding: 0.75rem 1rem; font-weight: 700; font-size: 1rem; border-radius: 10px; }
     .process-cta { background: linear-gradient(135deg,var(--brand),var(--brand-600)); color: #fff; border: 1px solid var(--brand-600); transition: background 0.18s, border-color 0.18s, transform 0.08s; }
@@ -277,7 +278,7 @@ $products = $productObj->getAll();
     
     /* Mobile Responsive Styles */
     @media(max-width:1200px){
-        .pos-layout{ grid-template-columns:1fr 400px; gap:0.8rem; }
+        .pos-layout{ grid-template-columns:1fr 480px; gap:0.8rem; }
         .product-grid{ grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); }
     }
     
@@ -353,8 +354,8 @@ $products = $productObj->getAll();
         /* Cart more compact */
         .cart-panel{ padding:0.8rem; }
         .cart-items{ max-height:250px; }
-        .cart-stepper button{ width:36px; height:36px; font-size:1.2rem; }
-        .cart-stepper input{ width:50px; font-size:1rem; }
+        .cart-stepper button{ width:44px; height:44px; font-size:1.4rem; }
+        .cart-stepper input{ width:60px; height:44px; font-size:1rem; }
         
         /* Map */
         #deliveryMap{ height:240px; }
@@ -423,7 +424,7 @@ $products = $productObj->getAll();
                         <div id="cartInputs" style="display:none;"></div>
                             <div class="totals">
                             <div class="tot-row"><span>Total</span><input type="text" id="total" name="total" readonly value="0"></div>
-                            <div class="tot-row"><span>Payment</span><input type="number" min="0" step="1" inputmode="numeric" pattern="\\d*" name="payment" id="payment" placeholder="0"></div>
+                            <div class="tot-row"><span>Payment</span><input type="text" inputmode="numeric" name="payment" id="payment" placeholder="0"></div>
                             <div class="tot-row"><span>Change</span><input type="text" id="change" name="change" readonly value="0"></div>
                         </div>
                         <div class="cart-footer">
@@ -547,7 +548,7 @@ $products = $productObj->getAll();
                         <button type="button" class="cart-plus" data-id="${item.id}" ${item.qtySack >= item.stockSack ? 'disabled' : ''}>+</button>
                     </div>
                 </div>
-                <div class="cart-sub">₱${subtotal.toFixed(0)}</div>
+                <div class="cart-sub">₱${subtotal.toLocaleString('en-PH', { maximumFractionDigits: 0 })}</div>
                 <button type="button" class="btn btn-delete cart-remove" data-id="${item.id}"><i class='bx bx-trash'></i></button>`;
             cartItemsEl.appendChild(row);
             const hidPid=document.createElement('input'); hidPid.type='hidden'; hidPid.name='product_id[]'; hidPid.value=String(item.id); inputsEl.appendChild(hidPid);
@@ -580,11 +581,13 @@ $products = $productObj->getAll();
         });
     }
     document.getElementById('clearCart').addEventListener('click',()=>{ cart.clear(); renderCart(); });
-    // Enforce whole numbers in payment input and strip non-digits
+    // Enforce whole numbers in payment input and add comma formatting
     const payEl = document.getElementById('payment');
     payEl.addEventListener('input', () => {
         const cleaned = (payEl.value || '').replace(/\D+/g, '');
-        payEl.value = cleaned;
+        const formatted = cleaned ? parseInt(cleaned).toLocaleString('en-PH') : '';
+        payEl.value = formatted;
+        updateChangeCalculation();
     });
     // Guard & review submit
     document.getElementById('deliveryForm').addEventListener('submit', function(e){
@@ -606,9 +609,9 @@ $products = $productObj->getAll();
             Swal.fire({ icon:'warning', title:'Locate Customer', text:'Please select the customer address from suggestions to pin an accurate location on the map.' });
             return;
         }
-        // Parse total by stripping commas
+        // Parse total and payment by stripping commas
         const total = parseFloat((document.getElementById('total').value||'0').toString().replace(/,/g,''))||0;
-        const payment = Math.floor(parseFloat(document.getElementById('payment').value)||0);
+        const payment = Math.floor(parseFloat((document.getElementById('payment').value||'0').toString().replace(/,/g,''))||0);
         if (total <= 0) { Swal.fire({icon:'warning', title:'No Items', text:'Please add at least one item.'}); return; }
         if (payment < total) { Swal.fire({icon:'error', title:'Insufficient Payment', text:'Payment is less than total.'}); return; }
         Swal.fire({
@@ -664,7 +667,7 @@ $products = $productObj->getAll();
     // Real-time change calculation
     function updateChangeCalculation() {
         const total = parseFloat((document.getElementById('total').value || '0').toString().replace(/,/g, '')) || 0;
-        const payment = parseFloat(document.getElementById('payment').value) || 0;
+        const payment = parseFloat((document.getElementById('payment').value || '0').toString().replace(/,/g, '')) || 0;
         const change = Math.max(0, payment - total);
         document.getElementById('change').value = change.toLocaleString('en-PH', { maximumFractionDigits: 0 });
     }
