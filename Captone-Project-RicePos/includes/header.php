@@ -28,13 +28,17 @@ if (isset($pageTitle) && trim((string)$pageTitle) !== '') {
 }
 ?>
 <header class="app-header" role="banner" aria-label="Page header">
-    <!-- left spacer -->
-    <div class="app-header-left"></div>
+    <!-- left: mobile menu button -->
+    <div class="app-header-left">
+        <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+            <i class='bx bx-menu'></i>
+        </button>
+    </div>
     <!-- center: page title -->
     <div class="app-header-title" aria-live="polite"><?php echo htmlspecialchars($computedTitle, ENT_QUOTES); ?></div>
     <!-- right: user profile + notifications (all pages) -->
     <div class="app-header-right">
-        <?php $__isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin'; if ($__isAdmin): ?>
+        <?php $__isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin'; $__isDelivery = isset($_SESSION['role']) && $_SESSION['role'] === 'delivery_staff'; if ($__isAdmin || $__isDelivery): ?>
         <div class="notif-wrap" aria-live="polite">
             <button type="button" id="notifBell" class="notif-bell" aria-expanded="false" aria-controls="notifDropdown" title="Notifications">
                 <i class='bx bx-bell'></i>
@@ -50,7 +54,11 @@ if (isset($pageTitle) && trim((string)$pageTitle) !== '') {
                     </div>
                 </div>
                 <div id="notifList" class="notif-list" role="listbox" aria-label="Recent activity items"></div>
+                <?php if ($__isAdmin): ?>
                 <div class="notif-foot"><a href="inventory_logs.php">View all logs</a></div>
+                <?php else: ?>
+                <div class="notif-foot"><a href="delivery_staff.php">View my deliveries</a></div>
+                <?php endif; ?>
             </div>
         </div>
         <?php endif; ?>
@@ -73,9 +81,10 @@ if (isset($pageTitle) && trim((string)$pageTitle) !== '') {
         /* Minimal safety if CSS file fails to load */
         :root{ --sidebar-width:260px; --header-height:72px; }
         .app-header { position: fixed; top: 0; left: var(--sidebar-width, 260px); width: calc(100% - var(--sidebar-width, 260px)); height: var(--header-height, 72px); background: rgba(255,255,255,0.95); backdrop-filter: none; -webkit-backdrop-filter: none; border-bottom:1px solid rgba(0,0,0,0.08); z-index: 120; display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; padding: 0 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
-        .main-content { margin-left: var(--sidebar-width, 260px); padding-top: var(--header-height, 72px); min-height: 100vh; }
+        .main-content { margin-left: var(--sidebar-width, 260px); padding-top: var(--header-height, 72px); min-height: 100vh; width: auto; max-width: 100%; }
         .app-header-title { font-weight: 900; letter-spacing: 0.4px; color: #0f172a; text-align:center; font-size: 1.5rem; }
         .app-header-right { display:flex; justify-content:flex-end; align-items:center; padding-right: 0; }
+        .app-header-left { display:flex; align-items:center; }
         .notif-wrap { position: relative; margin-right: 14px; }
         .notif-bell { position: relative; border:1px solid #e2e8f0; background:rgba(255,255,255,0.9); border-radius:12px; width:44px; height:44px; display:grid; place-items:center; cursor:pointer; transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease; }
         .notif-bell i { font-size: 24px; color:#0f172a; }
@@ -115,23 +124,52 @@ if (isset($pageTitle) && trim((string)$pageTitle) !== '') {
         .user-chip .status-badge { color:#16a34a; font-weight:800; }
         .logout-btn { border:1px solid #ef4444; color:#ef4444; background:rgba(255,255,255,0.9); border-radius:10px; padding:8px 12px; font-weight:600; display:inline-flex; align-items:center; gap:6px; font-size: 0.85rem; transition: all 0.2s ease; }
         .logout-btn:hover { background:#fef2f2; }
-    </style>
-    <?php if ((isset($_SESSION['role']) ? $_SESSION['role'] : '') !== 'admin'): ?>
-    <style>
-        /* Staff: lock sidebar and layout sizing; prevent responsive shifts */
-        .sidebar { width: var(--sidebar-width) !important; min-width: var(--sidebar-width) !important; max-width: var(--sidebar-width) !important; flex: 0 0 var(--sidebar-width) !important; position: fixed !important; }
-        .app-header { left: var(--sidebar-width) !important; width: calc(100% - var(--sidebar-width)) !important; }
-        .main-content { margin-left: var(--sidebar-width) !important; }
-        @media (max-width: 700px) {
-            .sidebar { width: var(--sidebar-width) !important; flex: 0 0 var(--sidebar-width) !important; }
-            .app-header { left: var(--sidebar-width) !important; width: calc(100% - var(--sidebar-width)) !important; }
-            .main-content { margin-left: var(--sidebar-width) !important; }
+        
+        /* Mobile Responsive Header Styles */
+        @media (max-width: 768px) {
+            .app-header-right { gap: 0.5rem; }
+            .notif-wrap { margin-right: 8px; }
+            .notif-bell { width: 40px; height: 40px; }
+            .notif-bell i { font-size: 20px; }
+            .notif-dropdown { width: 320px; right: -10px; }
+            .user-chip { padding: 6px 8px; gap: 8px; }
+            .user-chip .avatar { width: 28px; height: 28px; font-size: 0.85rem; }
+            .user-chip .name { font-size: 0.85rem; }
+            .user-chip .sub { font-size: 0.68rem; }
+            .user-chip .meta { display: none; } /* Hide on very small screens */
+            .logout-btn { padding: 6px 10px; font-size: 0.8rem; }
+        }
+        
+        @media (max-width: 640px) {
+            .notif-wrap { margin-right: 6px; }
+            .notif-bell { width: 38px; height: 38px; }
+            .notif-bell i { font-size: 18px; }
+            .notif-dropdown { width: 290px; max-width: calc(100vw - 20px); }
+            .notif-head { padding: 8px 10px; flex-wrap: wrap; }
+            .notif-controls { width: 100%; margin-top: 6px; justify-content: space-between; }
+            .notif-action { padding: 5px 8px; font-size: 11px; }
+            .user-chip { padding: 5px 7px; }
+            .user-chip .avatar { width: 26px; height: 26px; font-size: 0.8rem; }
+            .logout-btn { padding: 5px 8px; font-size: 0.75rem; }
+            .logout-btn span { display: none; } /* Hide text, show icon only */
+        }
+        
+        @media (max-width: 480px) {
+            .app-header-right { gap: 0.4rem; }
+            .notif-wrap { margin-right: 4px; }
+            .notif-bell { width: 36px; height: 36px; }
+            .notif-bell i { font-size: 17px; }
+            .notif-badge { font-size: 11px; padding: 4px 6px; }
+            .notif-dropdown { width: 280px; }
+            .user-chip { padding: 4px 6px; }
+            .user-chip .avatar { width: 24px; height: 24px; font-size: 0.75rem; }
+            .logout-btn { padding: 4px 7px; min-width: 36px; justify-content: center; }
         }
     </style>
-    <?php endif; ?>
+    <?php /* Mobile responsive overrides removed - using global mobile styles from style.css */ ?>
     <script>
     (function(){
-        <?php if (!($__isAdmin ?? false)) { echo 'return;'; } ?>
+        <?php if (!((($__isAdmin ?? false)) || (($__isDelivery ?? false)))) { echo 'return;'; } ?>
         if (window.__riceposNotifInit) return; // avoid duplicate init
         window.__riceposNotifInit = true;
         const bell = document.getElementById('notifBell');
@@ -205,13 +243,20 @@ if (isset($pageTitle) && trim((string)$pageTitle) !== '') {
             if (!wrap.contains(e.target)) { closeDropdown(); }
         });
         document.addEventListener('keydown', (e)=>{ if (e.key==='Escape') closeDropdown(); });
+        // Track previous unread count for delivery staff to avoid repeated chimes
+        let prevUnreadCount = 0;
+
         // Server-backed: mark all read
         markBtn && markBtn.addEventListener('click', async ()=>{ 
             try{
-                const res = await fetch('notifications.php?action=mark_all_read', { method:'POST' });
+                const isAdmin = <?php echo $__isAdmin ? 'true' : 'false'; ?>;
+                const url = isAdmin ? 'notifications.php?action=mark_all_read' : 'delivery_staff_notifications.php?action=mark_all_read';
+                const res = await fetch(url, { method:'POST' });
                 const d = await res.json();
                 setBadge(0);
                 Array.from(listEl.children).forEach(ch=>{ ch.classList.add('read'); });
+                // Reset unread tracker so no stray chimes
+                prevUnreadCount = 0;
             }catch{}
         });
         
@@ -248,26 +293,34 @@ if (isset($pageTitle) && trim((string)$pageTitle) !== '') {
         });
         async function poll(){
             try{
-                const res = await fetch('notifications.php?action=list&since_id='+lastSeenId+'&limit=20', { cache:'no-store' });
-                const data = await res.json();
-                const rows = Array.isArray(data.rows)? data.rows: [];
-                if (typeof data.unread_count === 'number') setBadge(data.unread_count);
-                if (typeof data.max_id === 'number' && data.max_id < lastSeenId) {
-                    lastSeenId = data.max_id;
-                }
-                if(rows.length){
-                    lastSeenId = Math.max(...rows.map(r=>r.id).concat(lastSeenId));
-                    const items = rows.map(r=>({
-                        id: r.id,
-                        action: r.action,
-                        title: buildTitle(r),
-                        when: r.created_at,
-                        user: r.username || ('User#'+(r.user_id||'')),
-                        read: !!r.read
-                    }));
-                    addItems(items);
-                    const maxChimes = Math.min(rows.length, 3);
-                    for (let i=0;i<maxChimes;i++){ playChime(i*180); }
+                const isAdmin = <?php echo $__isAdmin ? 'true' : 'false'; ?>;
+                if (isAdmin) {
+                    const res = await fetch('notifications.php?action=list&since_id='+lastSeenId+'&limit=20', { cache:'no-store' });
+                    const data = await res.json();
+                    const rows = Array.isArray(data.rows)? data.rows: [];
+                    if (typeof data.unread_count === 'number') setBadge(data.unread_count);
+                    if (typeof data.max_id === 'number' && data.max_id < lastSeenId) { lastSeenId = data.max_id; }
+                    if(rows.length){
+                        lastSeenId = Math.max(...rows.map(r=>r.id).concat(lastSeenId));
+                        const items = rows.map(r=>({ id:r.id, action:r.action, title: buildTitle(r), when:r.created_at, user:r.username||('User#'+(r.user_id||'')), read: !!r.read }));
+                        addItems(items);
+                        const maxChimes = Math.min(rows.length, 3);
+                        for (let i=0;i<maxChimes;i++){ playChime(i*180); }
+                    }
+                } else {
+                    const res = await fetch('delivery_staff_notifications.php?action=list&limit=20', { cache:'no-store' });
+                    const data = await res.json();
+                    const rows = Array.isArray(data.rows)? data.rows: [];
+                    if (typeof data.unread_count === 'number') {
+                        setBadge(data.unread_count);
+                        // Chime only when unread increases since last poll
+                        if (data.unread_count > prevUnreadCount) { playChime(0); }
+                        prevUnreadCount = data.unread_count;
+                    }
+                    if(rows.length){
+                        const items = rows.map(r=>({ id:r.id, action:'delivery_status', title:`Delivery #${r.id} ${r.status} • ₱${(r.total_amount||0).toLocaleString()}`, when:r.event_time, user:r.customer_name||'', read: !!r.read }));
+                        addItems(items);
+                    }
                 }
             }catch(e){ /* ignore */ }
         }
@@ -287,14 +340,26 @@ if (isset($pageTitle) && trim((string)$pageTitle) !== '') {
         // Initial load and visibility-aware polling. Warm bootstrap with latest entries from server.
         (async ()=>{
             try {
-                const res0 = await fetch('notifications.php?action=list&since_id=0&limit=20', { cache:'no-store' });
-                const d0 = await res0.json();
-                const rows0 = Array.isArray(d0.rows) ? d0.rows : [];
-                if (typeof d0.unread_count === 'number') setBadge(d0.unread_count);
-                if (rows0.length) {
-                    lastSeenId = Math.max(...rows0.map(r=>r.id));
-                    const items0 = rows0.map(r=>({ id:r.id, action:r.action, title:buildTitle(r), when:r.created_at, user:r.username || ('User#'+(r.user_id||'')), read: !!r.read }));
-                    addItems(items0);
+                const isAdmin = <?php echo $__isAdmin ? 'true' : 'false'; ?>;
+                if (isAdmin) {
+                    const res0 = await fetch('notifications.php?action=list&since_id=0&limit=20', { cache:'no-store' });
+                    const d0 = await res0.json();
+                    const rows0 = Array.isArray(d0.rows) ? d0.rows : [];
+                    if (typeof d0.unread_count === 'number') setBadge(d0.unread_count);
+                    if (rows0.length) {
+                        lastSeenId = Math.max(...rows0.map(r=>r.id));
+                        const items0 = rows0.map(r=>({ id:r.id, action:r.action, title:buildTitle(r), when:r.created_at, user:r.username || ('User#'+(r.user_id||'')), read: !!r.read }));
+                        addItems(items0);
+                    }
+                } else {
+                    const res0 = await fetch('delivery_staff_notifications.php?action=list&limit=20', { cache:'no-store' });
+                    const d0 = await res0.json();
+                    const rows0 = Array.isArray(d0.rows) ? d0.rows : [];
+                    if (typeof d0.unread_count === 'number') { setBadge(d0.unread_count); prevUnreadCount = d0.unread_count; }
+                    if (rows0.length) {
+                        const items0 = rows0.map(r=>({ id:r.id, action:'delivery_status', title:`Delivery #${r.id} ${r.status} • ₱${(r.total_amount||0).toLocaleString()}`, when:r.event_time, user:r.customer_name||'', read: !!r.read }));
+                        addItems(items0);
+                    }
                 }
             } catch {}
             // Visibility-aware polling
@@ -307,5 +372,73 @@ if (isset($pageTitle) && trim((string)$pageTitle) !== '') {
     })();
     </script>
 </header>
+
+<!-- Mobile Overlay for Sidebar -->
+<div class="mobile-overlay" id="mobileOverlay"></div>
+
+<script>
+(function() {
+    // Mobile menu toggle functionality
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    
+    if (!menuBtn || !sidebar || !overlay) return;
+    
+    function openMobileMenu() {
+        sidebar.classList.add('mobile-open');
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+    
+    function closeMobileMenu() {
+        sidebar.classList.remove('mobile-open');
+        overlay.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+    
+    // Toggle menu on button click
+    menuBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (sidebar.classList.contains('mobile-open')) {
+            closeMobileMenu();
+        } else {
+            openMobileMenu();
+        }
+    });
+    
+    // Close menu when overlay is clicked
+    overlay.addEventListener('click', function() {
+        closeMobileMenu();
+    });
+    
+    // Close menu when a nav link is clicked
+    const navLinks = sidebar.querySelectorAll('.nav-links a');
+    navLinks.forEach(function(link) {
+        link.addEventListener('click', function() {
+            // Small delay to allow navigation
+            setTimeout(closeMobileMenu, 100);
+        });
+    });
+    
+    // Close menu on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sidebar.classList.contains('mobile-open')) {
+            closeMobileMenu();
+        }
+    });
+    
+    // Close menu when window is resized above mobile breakpoint
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (window.innerWidth > 768 && sidebar.classList.contains('mobile-open')) {
+                closeMobileMenu();
+            }
+        }, 250);
+    });
+})();
+</script>
 
 

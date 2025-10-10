@@ -89,10 +89,11 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Delivery Management - RicePOS</title>
     <?php $cssVer = @filemtime(__DIR__ . '/assets/css/style.css') ?: time(); ?>
     <link rel="stylesheet" href="assets/css/style.css?v=<?php echo htmlspecialchars((string)$cssVer, ENT_QUOTES); ?>">
+    <link rel="stylesheet" href="assets/css/mobile-delivery.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -106,20 +107,20 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
     .main-content { background: #f4f6fb; min-height: 100vh; overflow-x: hidden; }
     .filters { 
         display: grid; 
-        grid-template-columns: auto 1fr auto; 
-        gap: 1.2rem; 
-        margin: 1.2rem 0; 
+        grid-template-columns: auto 200px 1fr auto; 
+        gap: 0.8rem; 
+        margin: 0.8rem 0; 
         align-items: center; 
         width: 100%;
-        padding: 0.5rem 0;
+        padding: 0.4rem 0;
     }
     .filters input, .filters select { 
-        padding: 0.7rem 1rem; 
+        padding: 0.65rem 1rem; 
         border: 1px solid #d1d5db; 
-        border-radius: 10px; 
+        border-radius: 999px; 
         background: #fff; 
         font-size: 0.95rem; 
-        height: 44px;
+        height: 46px;
         box-sizing: border-box;
         transition: all 0.2s ease;
     }
@@ -129,15 +130,17 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
         outline: none;
     }
     .filters select { 
-        min-width: 200px; 
+        min-width: 180px; 
         width: 200px; 
-        height : 50px;
-
+        -webkit-appearance: none; 
+        -moz-appearance: none; 
+        appearance: none; 
+        background-position: right 12px center; 
+        background-repeat: no-repeat; 
     }
     .filters input[type="text"] { 
         width: 100%; 
-        min-width: 350px; 
-        height : 50px;
+        min-width: 320px; 
     }
     .filters .btn { 
         padding: 0.7rem 1.4rem; 
@@ -159,12 +162,10 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
-    .filter-group { 
-        display: flex; 
-        align-items: center; 
-        gap: 0.6rem; 
-        white-space: nowrap;
-        height: 44px;
+    .filter-group { display: contents; }
+    /* Visually hide the Status label but keep it accessible */
+    .filters label[for="statusFilter"]{
+        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
     }
     .badge { display:inline-block; padding: 0.1rem 0.4rem; border-radius: 6px; font-size: 0.78rem; border:1px solid transparent; }
     .b-pending { background:#fee2e2; color:#991b1b; border-color:#fecaca; }
@@ -365,6 +366,86 @@ $stmt = $pdo->prepare($sql); $stmt->execute($params); $rows = $stmt->fetchAll();
      .rider-actions .btn:hover {
          background: #16a34a;
          border-color: #16a34a;
+    }
+    
+    /* Mobile Responsive Styles */
+    @media(max-width:1024px){
+        .filters{ grid-template-columns:1fr; gap:0.8rem; }
+        .filters .filter-group{ width:100%; }
+        .filters select{ width:100%; min-width:100%; }
+        .filters input[type="text"]{ min-width:100%; }
+        .filters .btn{ width:100%; }
+        .weather-grid{ grid-template-columns:repeat(4, 1fr); gap:0.8rem; }
+    }
+    
+    @media(max-width:768px){
+        /* Weather and GPS panels stacked */
+        .weather-grid{ grid-template-columns:repeat(3, 1fr); gap:0.6rem; }
+        .weather-card{ padding:0.8rem 0.6rem; }
+        .weather-day{ font-size:0.9rem; }
+        .weather-temp{ font-size:1rem; }
+        .weather-rain{ font-size:0.85rem; padding:0.15rem 0.5rem; }
+        .weather-forecast-icon{ width:40px !important; height:40px !important; }
+        
+        /* GPS Rider Card */
+        .gps-rider-card{ padding:0.8rem; }
+        .rider-info{ flex-direction:column; align-items:flex-start; gap:0.6rem; }
+        .rider-avatar{ width:40px; height:40px; font-size:1.5rem; }
+        .rider-name{ font-size:0.95rem; }
+        .rider-status{ font-size:0.85rem; }
+        .rider-location{ font-size:0.8rem; }
+        .rider-vehicle{ font-size:0.75rem; }
+        .rider-actions{ flex-direction:column; width:100%; }
+        .rider-actions .btn{ width:100%; justify-content:center; min-height:44px; }
+        
+        /* Table card */
+        .table-card{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+        .user-table{ min-width:920px; font-size:0.9rem; }
+        .user-table thead th{ padding:0.7rem 0.8rem; font-size:0.85rem; }
+        .user-table tbody td{ padding:0.7rem 0.8rem; font-size:0.85rem; }
+        .user-table tbody td form{ flex-wrap:wrap; }
+        .user-table tbody td select, .user-table tbody td button{ font-size:0.85rem; padding:0.3rem 0.4rem; }
+        
+        /* Map panel */
+        #mgmtMap{ height:300px; }
+        .route-summary{ font-size:0.95rem; }
+        
+        /* Pagination */
+        .pagination{ flex-wrap:wrap; justify-content:center; }
+        .pagination a{ padding:0.4rem 0.7rem; font-size:0.9rem; }
+    }
+    
+    @media(max-width:640px){
+        .weather-grid{ grid-template-columns:repeat(2, 1fr); gap:0.5rem; }
+        .weather-card{ padding:0.7rem 0.5rem; }
+        .weather-day{ font-size:0.85rem; }
+        .weather-temp{ font-size:0.95rem; }
+        .weather-rain{ font-size:0.8rem; }
+        .weather-forecast-icon{ width:36px !important; height:36px !important; }
+        
+        /* GPS panel */
+        .rider-actions .btn{ font-size:0.85rem; padding:0.5rem; }
+        
+        /* Filters fully stacked */
+        .filters{ padding:0.4rem 0; }
+        .filter-group{ flex-direction:column; align-items:stretch; height:auto; }
+        .filter-group label{ margin-bottom:0.3rem; }
+        
+        /* Map smaller */
+        #mgmtMap{ height:250px; }
+    }
+    
+    @media(max-width:480px){
+        .weather-grid{ grid-template-columns:1fr; gap:0.5rem; }
+        .weather-card{ padding:0.8rem; }
+        .weather-forecast-icon{ width:44px !important; height:44px !important; }
+        
+        /* Table: show horizontal scroll hint */
+        .table-card::after{ content:'← Scroll →'; display:block; text-align:center; padding:0.5rem; color:#9ca3af; font-size:0.85rem; }
+        
+        /* Rider card even more compact */
+        .rider-name{ font-size:0.9rem; }
+        .rider-status, .rider-location{ font-size:0.8rem; }
     }
     </style>
 </head>

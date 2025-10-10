@@ -70,9 +70,10 @@ $todayValue = (float)$stmt->fetchColumn();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Delivery Dashboard - RicePOS</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/mobile-delivery.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -104,9 +105,35 @@ $todayValue = (float)$stmt->fetchColumn();
     .badge.transit{ background:#dbeafe; color:#1e40af; }
     .badge.delivered{ background:#dcfce7; color:#166534; }
     .badge.failed{ background:#fef2f2; color:#991b1b; }
-    .btn-claim{ padding:0.4rem 0.8rem; background:#2563eb; color:#fff; border:none; border-radius:8px; font-weight:600; cursor:pointer; }
+    .btn-claim{ padding:0.4rem 0.8rem; background:#2563eb; color:#fff; border:none; border-radius:8px; font-weight:600; cursor:pointer; min-height:44px; }
     .btn-claim:hover{ background:#1e40af; }
     .empty-state{ text-align:center; padding:2rem; color:#9ca3af; }
+    
+    /* Mobile Responsive Styles */
+    @media(max-width:768px){
+        .kpi-grid{ grid-template-columns:repeat(2, 1fr); gap:0.6rem; }
+        .kpi-card{ padding:0.8rem; }
+        .kpi-icon{ width:36px; height:36px; font-size:18px; }
+        .kpi-label{ font-size:0.75rem; }
+        .kpi-value{ font-size:1.5rem; }
+        .card{ padding:0.8rem; }
+        .card h3{ font-size:1rem; margin-bottom:0.6rem; }
+        .delivery-item{ flex-direction:column; align-items:flex-start; gap:0.5rem; padding:0.8rem 0.6rem; }
+        .delivery-info{ width:100%; }
+        .delivery-name{ font-size:0.95rem; }
+        .delivery-meta{ font-size:0.8rem; }
+        .badge{ padding:0.25rem 0.6rem; font-size:0.7rem; white-space:nowrap; }
+        .btn-claim{ width:100%; padding:0.6rem; min-height:48px; font-size:0.95rem; }
+        .btn{ min-height:44px; padding:0.6rem 1rem; font-size:0.95rem; }
+    }
+    
+    @media(max-width:480px){
+        .kpi-grid{ grid-template-columns:1fr; gap:0.5rem; }
+        .kpi-card{ padding:0.7rem; }
+        .kpi-header{ gap:0.5rem; }
+        .kpi-value{ font-size:1.3rem; }
+        .delivery-meta{ font-size:0.75rem; line-height:1.4; }
+    }
     </style>
 </head>
 <body>

@@ -122,10 +122,11 @@ $products = $productObj->getAll();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Delivery - RicePOS</title>
     <?php $cssVer = @filemtime(__DIR__ . '/assets/css/style.css') ?: time(); ?>
     <link rel="stylesheet" href="assets/css/style.css?v=<?php echo htmlspecialchars((string)$cssVer, ENT_QUOTES); ?>">
+    <link rel="stylesheet" href="assets/css/mobile-delivery.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -224,6 +225,100 @@ $products = $productObj->getAll();
         animation: spin 0.9s linear infinite; margin: 6px 0 2px 0;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Mobile Responsive Styles */
+    @media(max-width:1200px){
+        .pos-layout{ grid-template-columns:1fr 400px; gap:0.8rem; }
+        .product-grid{ grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); }
+    }
+    
+    @media(max-width:1024px){
+        .pos-layout{ grid-template-columns:1fr; gap:1rem; }
+        .cart-panel{ position:static; width:100%; max-width:100%; order:2; }
+        .product-grid{ order:1; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:0.8rem; }
+        .form-grid{ margin-bottom:1rem; }
+    }
+    
+    @media(max-width:768px){
+        .main-content{ padding:1rem 0.8rem; }
+        
+        /* Form fields stacked */
+        .form-grid{ grid-template-columns:1fr; gap:0.6rem; }
+        .form-grid input, .form-grid textarea{ font-size:16px; padding:0.65rem; } /* 16px prevents zoom on iOS */
+        .form-grid textarea{ min-height:80px; }
+        
+        /* Product grid 2 columns */
+        .product-grid{ grid-template-columns:repeat(2, 1fr); gap:0.7rem; }
+        .product-card{ padding:0.7rem; }
+        .product-card .prod-img{ width:100px; height:100px; }
+        .product-card .prod-name{ font-size:0.9rem; margin-top:0.4rem; }
+        .product-card .prod-meta{ font-size:0.85rem; }
+        .product-card .prod-price{ font-size:0.9rem; }
+        .product-card .prod-stock{ font-size:0.8rem; }
+        .product-card .btn-add{ width:100%; padding:0.6rem; font-size:0.95rem; min-height:44px; }
+        
+        /* Cart panel */
+        .cart-panel{ padding:1rem; }
+        .cart-header{ font-size:1rem; }
+        .cart-items{ max-height:300px; }
+        .cart-row{ grid-template-columns:40px 1fr; gap:0.5rem; row-gap:0.4rem; }
+        .cart-thumb{ width:40px; height:40px; }
+        .cart-name{ grid-column:2; font-size:0.9rem; }
+        .cart-qty{ grid-column:1 / -1; margin-top:0.2rem; }
+        .cart-qty label{ font-size:0.7rem; }
+        .cart-qty input{ font-size:0.9rem; padding:0.4rem; height:36px; }
+        .cart-sub{ grid-column:1 / -1; text-align:center; font-size:0.95rem; padding:0.3rem; background:#f9fafb; border-radius:6px; }
+        .cart-row button.cart-remove{ grid-column:1 / -1; width:100%; margin-top:0.3rem; min-height:40px; }
+        
+        .totals{ gap:0.6rem; margin-top:0.8rem; }
+        .tot-row{ gap:0.4rem; }
+        .tot-row span{ font-size:0.95rem; }
+        .tot-row input{ font-size:0.95rem; padding:0.65rem; height:44px; }
+        
+        .cta-btn{ font-size:0.95rem; padding:0.85rem; min-height:52px; }
+        
+        /* Map */
+        .map-wrap{ padding:0.5rem; margin-top:0.6rem; }
+        #deliveryMap{ height:280px; }
+        .route-info{ font-size:0.95rem; margin-top:0.4rem; }
+        
+        /* Geo suggest */
+        .geo-results{ max-height:180px; font-size:0.9rem; }
+        .geo-results div{ padding:7px 9px; }
+    }
+    
+    @media(max-width:640px){
+        .main-content{ padding:0.8rem 0.6rem; }
+        
+        /* Product grid single column for very small screens */
+        .product-grid{ grid-template-columns:1fr; gap:0.6rem; }
+        .product-card{ padding:0.8rem; }
+        .product-card .prod-img{ width:120px; height:120px; }
+        .product-card .prod-name{ font-size:0.95rem; }
+        
+        /* Cart more compact */
+        .cart-panel{ padding:0.8rem; }
+        .cart-items{ max-height:250px; }
+        .cart-stepper button{ width:36px; height:36px; font-size:1.2rem; }
+        .cart-stepper input{ width:50px; font-size:1rem; }
+        
+        /* Map */
+        #deliveryMap{ height:240px; }
+        .route-info{ font-size:0.9rem; }
+    }
+    
+    @media(max-width:480px){
+        .main-content{ padding:0.6rem 0.5rem; }
+        .product-card .prod-img{ width:100%; height:auto; aspect-ratio:1; max-width:150px; margin:0 auto; }
+        .cart-header{ flex-direction:column; align-items:flex-start; gap:0.5rem; }
+        .cart-header button{ width:100%; }
+        #deliveryMap{ height:200px; }
+        
+        /* Overlay */
+        .overlay-card{ width:95%; padding:18px; }
+        .overlay-title{ font-size:1.1rem; }
+        .overlay-sub{ font-size:0.9rem; }
+    }
     </style>
 </head>
 <body>

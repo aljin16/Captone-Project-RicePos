@@ -150,19 +150,21 @@ $rows = $stmt->fetchAll();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>My Deliveries - RicePOS</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/mobile-delivery.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
     :root{ --brand:#2563eb; --success:#16a34a; --warn:#f59e0b; --danger:#dc2626; --gray:#6b7280; }
     body{ background:#f8fafc; }
-    .toolbar{ display:flex; gap:0.6rem; align-items:center; margin:1rem 0; flex-wrap:wrap; background:#fff; padding:1rem; border-radius:14px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
-    .toolbar select, .toolbar input{ padding:0.5rem 0.7rem; border:1px solid #e5e7eb; border-radius:8px; font-size:0.95rem; }
-    .toolbar input{ flex:1; min-width:200px; }
-    .toolbar .btn{ padding:0.5rem 1.2rem; }
-    .view-toggle{ display:flex; gap:0.3rem; background:#f3f4f6; border-radius:10px; padding:0.25rem; }
+    .toolbar{ display:grid; grid-template-columns:auto 200px 1fr auto; gap:0.8rem; align-items:center; margin:0.8rem 0; background:#fff; padding:0.8rem; border-radius:14px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+    .toolbar select, .toolbar input{ padding:0.65rem 1rem; border:1px solid #e5e7eb; border-radius:999px; font-size:0.95rem; box-sizing:border-box; background:#fff; height:46px; }
+    .toolbar select{ width:100%; min-width:0; }
+    .toolbar input{ width:100%; min-width:0; }
+    .toolbar .btn{ padding:0.65rem 1.5rem; border-radius:999px; white-space:nowrap; height:46px; }
+    .view-toggle{ display:flex; gap:0.3rem; background:#f3f4f6; border-radius:10px; padding:0.25rem; margin-right:0.4rem; }
     .view-toggle button{ padding:0.4rem 1rem; border:none; background:transparent; border-radius:8px; font-weight:600; cursor:pointer; transition:all 0.2s ease; }
     .view-toggle button.active{ background:#fff; color:var(--brand); box-shadow:0 2px 4px rgba(0,0,0,0.1); }
     .delivery-grid{ display:grid; gap:1rem; }
@@ -213,7 +215,80 @@ $rows = $stmt->fetchAll();
     .me-badge{ display:inline-flex; align-items:center; gap:0.4rem; padding:0.3rem 0.8rem; background:linear-gradient(135deg,#dbeafe,#bfdbfe); color:#1e40af; border-radius:999px; font-size:0.8rem; font-weight:700; }
     .empty-state{ text-align:center; padding:4rem 2rem; color:#9ca3af; }
     .empty-state i{ font-size:4rem; margin-bottom:1rem; }
-    @media(max-width:768px){ .card-actions{ flex-direction:column; } .toolbar{ flex-direction:column; align-items:stretch; } }
+    
+    /* Enhanced Mobile Responsive Styles */
+    @media(max-width:1024px){
+        .toolbar{ grid-template-columns:auto 180px 1fr auto; gap:0.7rem; }
+        .workflow-timeline{ gap:0.3rem; padding:0.8rem; }
+        .workflow-step{ gap:0.25rem; }
+        .workflow-dot{ width:32px; height:32px; font-size:14px; }
+        .workflow-label{ font-size:0.65rem; }
+    }
+    
+    @media(max-width:768px){ 
+        .toolbar{ grid-template-columns:1fr; padding:0.8rem; gap:0.6rem; }
+        .toolbar select, .toolbar input{ width:100%; min-width:100%; max-width:100%; font-size:0.95rem; padding:0.7rem 1rem; }
+        .toolbar .btn{ width:100%; min-height:48px; justify-content:center; }
+        .view-toggle{ width:100%; margin-right:0; margin-bottom:0.4rem; }
+        .view-toggle button{ width:50%; font-size:0.95rem; padding:0.5rem; }
+        
+        .delivery-card{ padding:1rem; border-radius:14px; }
+        .card-header{ flex-direction:column; align-items:flex-start; gap:0.8rem; }
+        .card-header > div:last-child{ width:100%; display:flex; flex-wrap:wrap; gap:0.5rem; align-items:flex-start; }
+        .card-badge{ flex-grow:0; }
+        .me-badge{ flex-grow:1; justify-content:center; }
+        
+        .card-id{ font-size:1.3rem; }
+        .card-body{ gap:0.7rem; }
+        .info-row{ gap:0.7rem; }
+        .info-icon{ width:32px; height:32px; font-size:16px; }
+        .info-label{ font-size:0.75rem; }
+        .info-value{ font-size:0.95rem; }
+        
+        .workflow-timeline{ flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; gap:0.4rem; padding:0.7rem 0.5rem; }
+        .workflow-step{ flex:0 0 auto; min-width:70px; }
+        .workflow-step::after{ display:none; }
+        .workflow-dot{ width:36px; height:36px; }
+        .workflow-label{ font-size:0.7rem; white-space:normal; text-align:center; }
+        
+        .card-actions{ flex-direction:column; gap:0.5rem; }
+        .card-actions .btn{ width:100%; justify-content:center; min-height:48px; font-size:0.95rem; }
+    }
+    
+    @media(max-width:640px){
+        .delivery-card{ padding:0.9rem; }
+        .card-id{ font-size:1.2rem; }
+        .card-badge{ font-size:0.7rem; padding:0.25rem 0.7rem; }
+        .me-badge{ font-size:0.75rem; padding:0.25rem 0.7rem; }
+        
+        .info-icon{ width:28px; height:28px; font-size:14px; }
+        .info-label{ font-size:0.7rem; }
+        .info-value{ font-size:0.9rem; }
+        
+        .workflow-step{ min-width:60px; }
+        .workflow-dot{ width:32px; height:32px; font-size:13px; }
+        .workflow-label{ font-size:0.65rem; }
+    }
+    
+    @media(max-width:480px){
+        .toolbar{ padding:0.7rem; gap:0.6rem; }
+        .delivery-card{ padding:0.8rem; }
+        .card-id{ font-size:1.1rem; }
+        
+        .info-row{ flex-direction:row; align-items:flex-start; }
+        .info-icon{ flex-shrink:0; }
+        .info-value{ font-size:0.85rem; word-break:break-word; }
+        
+        .workflow-timeline{ padding:0.6rem 0.4rem; }
+        .workflow-step{ min-width:55px; }
+        .workflow-dot{ width:30px; height:30px; font-size:12px; }
+        .workflow-label{ font-size:0.6rem; }
+        
+        .empty-state{ padding:3rem 1.5rem; }
+        .empty-state i{ font-size:3rem; }
+        .empty-state h3{ font-size:1.1rem; }
+        .empty-state p{ font-size:0.9rem; }
+    }
     </style>
 </head>
 <body>
@@ -225,20 +300,20 @@ $rows = $stmt->fetchAll();
             <div class="view-toggle">
                 <button class="<?php echo $view==='mine'?'active':''; ?>" onclick="changeView('mine')">My Deliveries</button>
                 <button class="<?php echo $view==='all'?'active':''; ?>" onclick="changeView('all')">All Available</button>
-                </div>
-            <form method="get" style="display:contents;">
+            </div>
+            <form method="get" style="display:contents; align-items:center;">
                 <input type="hidden" name="view" value="<?php echo htmlspecialchars($view); ?>">
-                <select name="status" onchange="this.form.submit()">
-                    <option value="">All Statuses</option>
+                <select name="status" aria-label="Filter by status" onchange="this.form.submit()">
+                    <option value="">Select Status</option>
                     <option value="pending" <?php echo $statusFilter==='pending'?'selected':''; ?>>Pending</option>
                     <option value="picked_up" <?php echo $statusFilter==='picked_up'?'selected':''; ?>>Picked Up</option>
                     <option value="in_transit" <?php echo $statusFilter==='in_transit'?'selected':''; ?>>In Transit</option>
                     <option value="delivered" <?php echo $statusFilter==='delivered'?'selected':''; ?>>Delivered</option>
                     <option value="failed" <?php echo $statusFilter==='failed'?'selected':''; ?>>Failed</option>
                 </select>
-                <input type="text" name="q" placeholder="Search customer, address, or transaction..." value="<?php echo htmlspecialchars($q); ?>">
+                <input type="text" name="q" placeholder="Search customer, address, or txn" value="<?php echo htmlspecialchars($q); ?>">
                 <button class="btn btn-primary" type="submit"><i class='bx bx-search'></i> Search</button>
-                </form>
+            </form>
         </div>
 
         <div class="delivery-grid">

@@ -31,8 +31,7 @@ function nav_active($pageName, $activePage)
 }
 ?>
 <style>
-    :root { --sidebar-width: 260px; }
-    .sidebar{ width:var(--sidebar-width); min-width:var(--sidebar-width); max-width:var(--sidebar-width); flex:0 0 var(--sidebar-width); position:fixed; top:0; left:0; height:100vh; overflow-y:auto; z-index:100; }
+    /* Sidebar submenu styles */
     .nav-submenu{ display:none; flex-direction:column; background:rgba(0,0,0,0.08); border-radius:8px; margin:0.25rem 0.5rem; padding:0.25rem 0; }
     .nav-submenu.open{ display:flex; }
     .nav-submenu a{ padding-left:2.5rem; font-size:0.9rem; }
@@ -80,7 +79,6 @@ function nav_active($pageName, $activePage)
         <?php if ($isDeliveryStaff): ?>
             <a href="delivery_dashboard.php" class="<?php echo nav_active('delivery_dashboard.php', $activePage); ?>"><i class='bx bx-home'></i> <span class="nav-label">Delivery Dashboard</span></a>
             <a href="delivery_staff.php" class="<?php echo nav_active('delivery_staff.php', $activePage); ?>"><i class='bx bx-list-ul'></i> <span class="nav-label">My Deliveries</span></a>
-            <a href="delivery_notifications.php" class="<?php echo nav_active('delivery_notifications.php', $activePage); ?>"><i class='bx bx-bell'></i> <span class="nav-label">Notifications</span></a>
         <?php elseif (!$isAdmin): ?>
             <a href="pos.php" class="<?php echo nav_active('pos.php', $activePage); ?>"><i class='bx bx-cart'></i> <span class="nav-label">POS</span></a>
             <a href="delivery.php" class="<?php echo nav_active('delivery.php', $activePage); ?>"><i class='bx bx-package'></i> <span class="nav-label">Delivery</span></a>
