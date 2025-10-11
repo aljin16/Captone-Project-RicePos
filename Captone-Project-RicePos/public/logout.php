@@ -9,13 +9,14 @@ require_login();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logout - RicePOS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(to top, #09203f 0%, #537895 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -53,7 +54,7 @@ require_login();
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
+        cancelButtonColor: '#2b5876',
         confirmButtonText: '<i class="bx bx-log-out"></i> Yes, Logout',
         cancelButtonText: '<i class="bx bx-x"></i> Cancel',
         reverseButtons: true,
@@ -67,7 +68,9 @@ require_login();
         },
         hideClass: {
             popup: 'animate__animated animate__fadeOutUp'
-        }
+        },
+        allowOutsideClick: false,
+        allowEscapeKey: true
     }).then((result) => {
         if (result.isConfirmed) {
             // Show loading state
@@ -85,7 +88,7 @@ require_login();
             setTimeout(() => {
                 window.location.href = 'logout_confirm.php';
             }, 1000);
-        } else {
+        } else if (result.isDismissed) {
             // Go back to previous page
             window.history.back();
         }
@@ -95,36 +98,55 @@ require_login();
     const style = document.createElement('style');
     style.textContent = `
         .swal-logout-popup {
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         
         .swal-confirm-btn {
-            border-radius: 8px !important;
-            font-weight: 600 !important;
-            padding: 12px 24px !important;
+            border-radius: 10px !important;
+            font-weight: 700 !important;
+            padding: 12px 28px !important;
             transition: all 0.3s ease !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem !important;
         }
         
         .swal-confirm-btn:hover {
             transform: translateY(-2px) !important;
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3) !important;
+            box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4) !important;
         }
         
         .swal-cancel-btn {
-            border-radius: 8px !important;
-            font-weight: 600 !important;
-            padding: 12px 24px !important;
+            border-radius: 10px !important;
+            font-weight: 700 !important;
+            padding: 12px 28px !important;
             transition: all 0.3s ease !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem !important;
+            background: linear-gradient(to right, #2b5876 0%, #4e4376 51%, #2b5876 100%) !important;
+            background-size: 200% auto !important;
+            border: none !important;
         }
         
         .swal-cancel-btn:hover {
             transform: translateY(-2px) !important;
-            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3) !important;
+            box-shadow: 0 6px 16px rgba(43, 88, 118, 0.5) !important;
+            background-position: right center !important;
+        }
+        
+        .swal-cancel-btn:focus {
+            box-shadow: 0 0 0 3px rgba(43, 88, 118, 0.3) !important;
         }
         
         .swal2-popup {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .swal2-icon.swal2-question {
+            border-color: #2b5876 !important;
+            color: #2b5876 !important;
         }
     `;
     document.head.appendChild(style);
