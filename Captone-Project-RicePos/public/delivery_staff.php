@@ -12,6 +12,7 @@ try { $pdo->exec("ALTER TABLE delivery_orders ADD COLUMN picked_up_at DATETIME N
 try { $pdo->exec("ALTER TABLE delivery_orders ADD COLUMN delivered_at DATETIME NULL"); } catch (Throwable $e) { /* ignore if exists */ }
 try { $pdo->exec("ALTER TABLE delivery_orders ADD COLUMN failed_reason VARCHAR(255) NULL"); } catch (Throwable $e) { /* ignore if exists */ }
 try { $pdo->exec("ALTER TABLE delivery_orders ADD COLUMN updated_at DATETIME NULL"); } catch (Throwable $e) { /* ignore if exists */ }
+try { $pdo->exec("ALTER TABLE delivery_orders ADD COLUMN proof_image VARCHAR(255) NULL"); } catch (Throwable $e) { /* ignore if exists */ }
 
 $message = '';
 $isAjax = ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax']) && $_POST['ajax'] === '1');
@@ -123,6 +124,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['claim_id'])) {
     if ($isAjax) { header('Content-Type: application/json'); echo json_encode($ajaxResponse); exit; }
 }
 
+// Upload proof of delivery
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_proof']) && isset($_FILES['proof_image'])) {
+    $id = (int)$_POST['upload_proof'];
+    
+    // Verify order is delivered and assigned to user
+    $stmt = $pdo->prepare("SELECT status, assigned_to FROM delivery_orders WHERE id = ?");
+    $stmt->execute([$id]);
+    $order = $stmt->fetch();
+    
+    if (!$order || $order['status'] !== 'delivered' || (int)$order['assigned_to'] !== (int)$uid) {
+        $ajaxResponse = ['success'=>false, 'message'=>'Invalid request'];
+    } else {
+        $file = $_FILES['proof_image'];
+        $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        $maxSize = 5 * 1024 * 1024; // 5MB
+        
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            $ajaxResponse = ['success'=>false, 'message'=>'File upload error'];
+        } elseif (!in_array($file['type'], $allowedTypes)) {
+            $ajaxResponse = ['success'=>false, 'message'=>'Only JPG, PNG, WEBP images allowed'];
+        } elseif ($file['size'] > $maxSize) {
+            $ajaxResponse = ['success'=>false, 'message'=>'File too large (max 5MB)'];
+        } else {
+            // Create upload directory if not exists
+            $uploadDir = __DIR__ . '/uploads/proof_of_delivery/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            
+            // Generate unique filename
+            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $filename = 'proof_' . $id . '_' . time() . '.' . $extension;
+            $filepath = $uploadDir . $filename;
+            
+            if (move_uploaded_file($file['tmp_name'], $filepath)) {
+                // Update database
+                $upd = $pdo->prepare('UPDATE delivery_orders SET proof_image = ?, updated_at = NOW() WHERE id = ?');
+                if ($upd->execute([$filename, $id])) {
+                    $ajaxResponse = ['success'=>true, 'message'=>'Proof uploaded successfully', 'filename'=>$filename];
+                } else {
+                    unlink($filepath); // Delete file if DB update fails
+                    $ajaxResponse = ['success'=>false, 'message'=>'Database update failed'];
+                }
+            } else {
+                $ajaxResponse = ['success'=>false, 'message'=>'Failed to save file'];
+            }
+        }
+    }
+    if ($isAjax) { header('Content-Type: application/json'); echo json_encode($ajaxResponse); exit; }
+}
+
+// Redeliver failed delivery
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['redeliver_id'])) {
+    $id = (int)$_POST['redeliver_id'];
+    
+    // Verify order is failed and assigned to user
+    $stmt = $pdo->prepare("SELECT status, assigned_to FROM delivery_orders WHERE id = ?");
+    $stmt->execute([$id]);
+    $order = $stmt->fetch();
+    
+    if (!$order || $order['status'] !== 'failed' || (int)$order['assigned_to'] !== (int)$uid) {
+        $ajaxResponse = ['success'=>false, 'message'=>'Invalid request'];
+    } else {
+        // Reset to pending status for redelivery
+        $upd = $pdo->prepare('UPDATE delivery_orders SET status = ?, failed_reason = NULL, updated_at = NOW() WHERE id = ?');
+        if ($upd->execute(['pending', $id])) {
+            $ajaxResponse = ['success'=>true, 'message'=>'Redelivery initiated successfully'];
+        } else {
+            $ajaxResponse = ['success'=>false, 'message'=>'Failed to update status'];
+        }
+    }
+    if ($isAjax) { header('Content-Type: application/json'); echo json_encode($ajaxResponse); exit; }
+}
+
 // Filters
 $view = isset($_GET['view']) ? (($_GET['view'] === 'mine') ? 'mine' : 'all') : 'mine';
 $statusFilter = isset($_GET['status']) && in_array($_GET['status'], ['','pending','picked_up','in_transit','delivered','failed','cancelled'], true)
@@ -137,7 +212,7 @@ if ($statusFilter !== '') { $where[] = 'd.status = ?'; $params[] = $statusFilter
 if ($q !== '') { $where[] = '(d.customer_name LIKE ? OR d.customer_address LIKE ? OR s.transaction_id LIKE ?)'; $params[] = "%$q%"; $params[] = "%$q%"; $params[] = "%$q%"; }
 $whereSql = $where ? ('WHERE '.implode(' AND ', $where)) : '';
 
-$sql = "SELECT d.id, d.customer_name, d.customer_phone, d.customer_address, d.notes, d.assigned_to, d.status, d.created_at, d.updated_at, d.picked_up_at, d.delivered_at, d.failed_reason, s.transaction_id, s.total_amount
+$sql = "SELECT d.id, d.customer_name, d.customer_phone, d.customer_address, d.notes, d.assigned_to, d.status, d.created_at, d.updated_at, d.picked_up_at, d.delivered_at, d.failed_reason, d.proof_image, s.transaction_id, s.total_amount
                        FROM delivery_orders d
                        JOIN sales s ON s.id = d.sale_id
         $whereSql
@@ -167,10 +242,11 @@ $rows = $stmt->fetchAll();
     .toolbar .btn{ padding:0.65rem 1.5rem; border-radius:999px; white-space:nowrap; height:46px; }
     .view-toggle{ display:flex; gap:0.3rem; background:#f3f4f6; border-radius:10px; padding:0.25rem; margin-right:0.4rem; }
     .view-toggle button{ padding:0.4rem 1rem; border:none; background:transparent; border-radius:8px; font-weight:600; cursor:pointer; transition:all 0.2s ease; }
+    .view-toggle button:hover{ background:rgba(255,255,255,0.5); }
     .view-toggle button.active{ background:#fff; color:var(--brand); box-shadow:0 2px 4px rgba(0,0,0,0.1); }
     .delivery-grid{ display:grid; gap:1rem; }
     .delivery-card{ background:#fff; border-radius:16px; padding:1.2rem; box-shadow:0 4px 12px rgba(0,0,0,0.06); transition:all 0.3s ease; border-left:4px solid #e5e7eb; position:relative; overflow:hidden; }
-    .delivery-card:hover{ box-shadow:0 8px 24px rgba(0,0,0,0.12); transform:translateY(-2px); }
+    .delivery-card:hover{ box-shadow:0 6px 16px rgba(0,0,0,0.08); }
     .delivery-card.mine{ border-left-color:var(--brand); background:linear-gradient(135deg, #f0f9ff 0%, #fff 100%); }
     .delivery-card.pending{ border-left-color:#f59e0b; }
     .delivery-card.picked_up{ border-left-color:#8b5cf6; }
@@ -206,7 +282,7 @@ $rows = $stmt->fetchAll();
     .workflow-step.active .workflow-label{ color:var(--brand); }
     .card-actions{ display:flex; gap:0.6rem; margin-top:1rem; flex-wrap:wrap; }
     .btn{ padding:0.6rem 1.2rem; border-radius:10px; font-weight:600; cursor:pointer; transition:all 0.2s ease; border:none; font-size:0.9rem; display:inline-flex; align-items:center; gap:0.4rem; }
-    .btn:hover{ transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+    .btn:hover{ opacity:0.85; }
     .btn-primary{ background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; }
     .btn-success{ background:linear-gradient(135deg,#22c55e,#16a34a); color:#fff; }
     .btn-warning{ background:linear-gradient(135deg,#fb923c,#f59e0b); color:#fff; }
@@ -421,6 +497,19 @@ $rows = $stmt->fetchAll();
                         </div>
                         <?php endif; ?>
 
+                        <?php if ($d['proof_image']): ?>
+                        <div style="margin-top:0.8rem; padding:0.8rem; background:#f0fdf4; border-radius:10px; border:1px solid #bbf7d0;">
+                            <div style="font-size:0.85rem; color:#166534; font-weight:600; margin-bottom:0.5rem;">
+                                <i class='bx bx-image'></i> Proof of Delivery:
+                            </div>
+                            <a href="uploads/proof_of_delivery/<?php echo htmlspecialchars($d['proof_image']); ?>" target="_blank">
+                                <img src="uploads/proof_of_delivery/<?php echo htmlspecialchars($d['proof_image']); ?>" 
+                                     alt="Proof of Delivery" 
+                                     style="width:100%; max-width:300px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); cursor:pointer;">
+                            </a>
+                        </div>
+                        <?php endif; ?>
+
                         <?php if ($d['status'] === 'failed' && $d['failed_reason']): ?>
                         <div style="padding:0.8rem; background:#fee2e2; border-radius:10px; margin-top:0.5rem;">
                             <div style="font-size:0.85rem; color:#991b1b; font-weight:600;">Failed Reason:</div>
@@ -449,6 +538,20 @@ $rows = $stmt->fetchAll();
                                 </button>
                                 <button class="btn btn-danger" onclick="markAsFailed(<?php echo $d['id']; ?>)">
                                     <i class='bx bx-x-circle'></i> Report Failed
+                                </button>
+                            <?php elseif ($d['status'] === 'delivered'): ?>
+                                <?php if (!$d['proof_image']): ?>
+                                    <button class="btn btn-success" onclick="uploadProof(<?php echo $d['id']; ?>)">
+                                        <i class='bx bx-camera'></i> Upload Proof of Delivery
+                                    </button>
+                                <?php else: ?>
+                                    <a href="uploads/proof_of_delivery/<?php echo htmlspecialchars($d['proof_image']); ?>" target="_blank" class="btn btn-success" style="opacity:0.8;">
+                                        <i class='bx bx-check-double'></i> Proof Uploaded
+                                    </a>
+                                <?php endif; ?>
+                            <?php elseif ($d['status'] === 'failed'): ?>
+                                <button class="btn btn-warning" onclick="redeliverOrder(<?php echo $d['id']; ?>)">
+                                    <i class='bx bx-redo'></i> Redeliver
                                 </button>
                             <?php endif; ?>
                         <?php endif; ?>
@@ -565,6 +668,98 @@ $rows = $stmt->fetchAll();
                             setTimeout(() => location.reload(), 1100);
                         } else {
                             Swal.fire({ icon: 'error', title: 'Failed', text: (j && j.message) || 'Update failed' });
+                        }
+                    })
+                    .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'Network error' }));
+            }
+        });
+    }
+
+    function uploadProof(id) {
+        Swal.fire({
+            title: 'Upload Proof of Delivery',
+            html: `
+                <div style="text-align:left; margin:1rem 0;">
+                    <input type="file" id="proofFile" accept="image/jpeg,image/jpg,image/png,image/webp" 
+                           style="width:100%; padding:0.5rem; border:1px solid #e5e7eb; border-radius:8px;">
+                    <p style="margin-top:0.5rem; font-size:0.85rem; color:#6b7280;">
+                        Accepted: JPG, PNG, WEBP (Max 5MB)
+                    </p>
+                </div>
+            `,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Upload',
+            confirmButtonColor: '#16a34a',
+            preConfirm: () => {
+                const fileInput = document.getElementById('proofFile');
+                const file = fileInput.files[0];
+                if (!file) {
+                    Swal.showValidationMessage('Please select an image file');
+                    return false;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    Swal.showValidationMessage('File size must be less than 5MB');
+                    return false;
+                }
+                return file;
+            }
+        }).then((result) => {
+            if (result.isConfirmed && result.value) {
+                Swal.showLoading();
+                const fd = new FormData();
+                fd.append('upload_proof', id);
+                fd.append('proof_image', result.value);
+                fd.append('ajax', '1');
+                fetch(window.location.href, { method: 'POST', body: fd })
+                    .then(r => r.json())
+                    .then(j => {
+                        if (j && j.success) {
+                            Swal.fire({ 
+                                icon: 'success', 
+                                title: 'Uploaded!', 
+                                text: 'Proof of delivery uploaded successfully', 
+                                timer: 1500, 
+                                showConfirmButton: false 
+                            });
+                            setTimeout(() => location.reload(), 1600);
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Failed', text: (j && j.message) || 'Upload failed' });
+                        }
+                    })
+                    .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'Network error' }));
+            }
+        });
+    }
+
+    function redeliverOrder(id) {
+        Swal.fire({
+            title: 'Redeliver this order?',
+            text: 'This will reset the order to pending status for redelivery',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, redeliver',
+            confirmButtonColor: '#f59e0b'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.showLoading();
+                const fd = new FormData();
+                fd.append('redeliver_id', id);
+                fd.append('ajax', '1');
+                fetch(window.location.href, { method: 'POST', body: fd })
+                    .then(r => r.json())
+                    .then(j => {
+                        if (j && j.success) {
+                            Swal.fire({ 
+                                icon: 'success', 
+                                title: 'Success!', 
+                                text: 'Order reset for redelivery', 
+                                timer: 1500, 
+                                showConfirmButton: false 
+                            });
+                            setTimeout(() => location.reload(), 1600);
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Failed', text: (j && j.message) || 'Redeliver failed' });
                         }
                     })
                     .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'Network error' }));
