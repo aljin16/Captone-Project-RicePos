@@ -41,7 +41,8 @@ if (!$buyerName) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Receipt - <?php echo htmlspecialchars($sale['transaction_id']); ?></title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <?php $cssVer = @filemtime(__DIR__ . '/assets/css/style.css') ?: time(); ?>
+    <link rel="stylesheet" href="assets/css/style.css?v=<?php echo $cssVer; ?>">
     <style>
         body { background:#f8fafc; font-family: 'Segoe UI', Arial, sans-serif; }
         .receipt { max-width: 380px; margin: 1rem auto; background:#fff; border:1px solid #e5e7eb; border-radius: 10px; padding: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }

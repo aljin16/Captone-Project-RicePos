@@ -47,8 +47,9 @@ $suppliers = get_all_suppliers();
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Stock-In - RicePOS</title>
-	<link rel="stylesheet" href="assets/css/style.css">
+    <title>Stock-In - RicePOS</title>
+	<?php $cssVer = @filemtime(__DIR__ . '/assets/css/style.css') ?: time(); ?>
+	<link rel="stylesheet" href="assets/css/style.css?v=<?php echo $cssVer; ?>">
 	<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

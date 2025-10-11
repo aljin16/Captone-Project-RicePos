@@ -97,12 +97,21 @@
 
 /* Landscape orientation fixes */
 @media (max-height: 500px) and (orientation: landscape) {
+    :root {
+        --header-height: 50px !important;
+    }
+    
     .app-header {
-        height: 50px !important;
+        height: var(--header-height) !important;
+    }
+    
+    .sidebar .nav-brand {
+        height: var(--header-height) !important;
+        padding: 0.8rem 0.8rem !important;
     }
     
     .main-content {
-        padding-top: calc(0.5rem + 50px) !important;
+        padding-top: calc(0.5rem + var(--header-height)) !important;
     }
 }
 

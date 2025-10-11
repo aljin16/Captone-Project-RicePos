@@ -40,7 +40,8 @@ if ($txn !== '') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Track Order<?php echo $txn?(' - '.htmlspecialchars($txn)) : ''; ?></title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <?php $cssVer = @filemtime(__DIR__ . '/assets/css/style.css') ?: time(); ?>
+    <link rel="stylesheet" href="assets/css/style.css?v=<?php echo $cssVer; ?>">
     <style>
         body{ background:#f8fafc; }
         .track-wrap{ max-width:860px; margin:1rem auto; padding:1rem; }

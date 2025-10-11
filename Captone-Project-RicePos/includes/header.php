@@ -80,7 +80,7 @@ if (isset($pageTitle) && trim((string)$pageTitle) !== '') {
     <style>
         /* Minimal safety if CSS file fails to load */
         :root{ --sidebar-width:260px; --header-height:72px; }
-        .app-header { position: fixed; top: 0; left: var(--sidebar-width, 260px); width: calc(100% - var(--sidebar-width, 260px)); height: var(--header-height, 72px); background: rgba(255,255,255,0.95); backdrop-filter: none; -webkit-backdrop-filter: none; border-bottom:1px solid rgba(0,0,0,0.08); z-index: 120; display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; padding: 0 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        .app-header { position: fixed; top: 0; left: var(--sidebar-width, 260px); width: calc(100% - var(--sidebar-width, 260px)); height: var(--header-height, 72px); background: rgba(255,255,255,0.95); backdrop-filter: none; -webkit-backdrop-filter: none; border-bottom:1px solid rgba(0,0,0,0.08); z-index: 120; display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; padding: 0 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.06); box-sizing: border-box; }
         .main-content { margin-left: var(--sidebar-width, 260px); padding-top: var(--header-height, 72px); min-height: 100vh; width: auto; max-width: 100%; }
         .app-header-title { font-weight: 900; letter-spacing: 0.4px; color: #0f172a; text-align:center; font-size: 1.5rem; }
         .app-header-right { display:flex; justify-content:flex-end; align-items:center; padding-right: 0; }
