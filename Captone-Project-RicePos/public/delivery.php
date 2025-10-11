@@ -103,7 +103,7 @@ $saleSuccess = false; $saleError = '';
                         $itemsStmt = $pdo->prepare('SELECT si.quantity_kg, si.quantity_sack, si.price, p.name FROM sale_items si JOIN products p ON p.id = si.product_id WHERE si.sale_id = ?');
                         $itemsStmt->execute([$sale['id']]);
                         $itemsRows = $itemsStmt->fetchAll();
-                        $html = build_receipt_html($sale, $itemsRows, $customer_name);
+                        $html = build_receipt_html($sale, $itemsRows, $customer_name, true);
                         $sent = send_receipt_email($customer_email, 'Your RicePOS Receipt ' . $saleSuccess, $html, $customer_name);
                         if (!isset($_SESSION)) { session_start(); }
                         $_SESSION['email_notice'] = $sent

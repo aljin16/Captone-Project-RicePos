@@ -1253,7 +1253,7 @@ $topRows = $topStmt->fetchAll();
                         <div class="metric-row delivery-metric-row">
                             <div class="metric-label-with-icon">
                                 <div class="delivery-status-icon transit-icon">
-                                    <img src="assets/img/truck.gif" alt="Truck" class="truck-gif">
+                                    <img src="assets/img/intransit_marker.gif" alt="Truck" class="truck-gif">
                                 </div>
                                 <span class="metric-label">In Transit</span>
                             </div>

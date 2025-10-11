@@ -256,8 +256,35 @@ function ensure_receipt_columns(): void {
 /**
  * Build a simple HTML receipt for email body.
  */
-function build_receipt_html(array $sale, array $items, ?string $buyerName): string {
+function build_receipt_html(array $sale, array $items, ?string $buyerName, bool $isDelivery = false): string {
     $buyerLine = $buyerName ? '<p style="margin:4px 0 0 0;"><strong>Buyer:</strong> '.htmlspecialchars($buyerName).'</p>' : '';
+    
+    // Add tracking link for delivery orders
+    $trackingSection = '';
+    if ($isDelivery) {
+        // Use APP_BASE_URL from config
+        $baseUrl = defined('APP_BASE_URL') && APP_BASE_URL ? rtrim(APP_BASE_URL, '/') : '';
+        
+        // Fallback to auto-detect if not configured
+        if (empty($baseUrl) && isset($_SERVER['HTTP_HOST'])) {
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $baseUrl = $protocol . '://' . $_SERVER['HTTP_HOST'];
+            $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
+            if ($scriptDir !== '/' && $scriptDir !== '\\') {
+                $baseUrl .= $scriptDir;
+            }
+        }
+        
+        $trackingUrl = $baseUrl . '/track_order.php?txn=' . urlencode($sale['transaction_id']);
+        
+        $trackingSection = '<div style="background:#dbeafe; border:1px solid #93c5fd; color:#1e40af; padding:12px; border-radius:8px; margin:12px 0; text-align:center;">'
+            .'<p style="margin:0 0 6px 0;"><strong>Delivery Order</strong></p>'
+            .'<p style="margin:0 0 8px 0; font-size:14px;">Track your order with this number:</p>'
+            .'<p style="margin:0 0 10px 0; font-size:18px; font-weight:700; letter-spacing:1px;">'.htmlspecialchars($sale['transaction_id']).'</p>'
+            .'<a href="'.htmlspecialchars($trackingUrl).'" style="display:inline-block; background:#2563eb; color:#fff; padding:10px 20px; border-radius:6px; text-decoration:none; font-weight:600;">Track Your Delivery</a>'
+            .'</div>';
+    }
+    
     $rows = '';
     foreach ($items as $it) {
         $qtyParts = [];
@@ -274,6 +301,7 @@ function build_receipt_html(array $sale, array $items, ?string $buyerName): stri
         .'<p style="margin:0 0 4px 0;">Transaction: <strong>'.htmlspecialchars($sale['transaction_id']).'</strong></p>'
         .$buyerLine
         .'<p style="margin:4px 0 8px 0;">Date/Time: '.htmlspecialchars($sale['datetime']).'</p>'
+        .$trackingSection
         .'<table style="width:100%; border-collapse:collapse; border-top:1px solid #ddd; border-bottom:1px solid #ddd;">'
         .'<thead><tr><th style="text-align:left; padding:6px 0;">Item</th><th style="text-align:right; padding:6px 0;">Qty</th><th style="text-align:right; padding:6px 0;">Price</th></tr></thead>'
         .'<tbody>'.$rows.'</tbody>'

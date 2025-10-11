@@ -29,11 +29,16 @@ $items = $itemsStmt->fetchAll();
 $cashierName = isset($_SESSION['username']) ? $_SESSION['username'] : ('User #'.$sale['user_id']);
 // Try get buyer name from sale or delivery order
 $buyerName = $sale['buyer_name'] ?? null;
+$isDeliveryOrder = false;
 if (!$buyerName) {
     $delStmt = $pdo->prepare('SELECT customer_name FROM delivery_orders WHERE sale_id = ? LIMIT 1');
     $delStmt->execute([$sale['id']]);
     $buyerName = $delStmt->fetchColumn();
 }
+// Check if this is a delivery order
+$delCheckStmt = $pdo->prepare('SELECT id FROM delivery_orders WHERE sale_id = ? LIMIT 1');
+$delCheckStmt->execute([$sale['id']]);
+$isDeliveryOrder = ($delCheckStmt->fetchColumn() !== false);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -85,6 +90,15 @@ if (!$buyerName) {
             <div class="row"><span>Buyer</span><span><?php echo htmlspecialchars($buyerName); ?></span></div>
             <?php endif; ?>
         </div>
+        <?php if ($isDeliveryOrder): ?>
+        <div style="background:#dbeafe;border:1px solid #93c5fd;color:#1e40af;padding:10px;border-radius:8px;margin-top:0.8rem;text-align:center;">
+            <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px;">Delivery Order</div>
+            <div style="font-size:0.88rem;margin-bottom:6px;">Track your order with this number:</div>
+            <div style="font-weight:800;font-size:1.1rem;letter-spacing:0.5px;margin-bottom:6px;"><?php echo htmlspecialchars($sale['transaction_id']); ?></div>
+            <a href="track_order.php?txn=<?php echo urlencode($sale['transaction_id']); ?>" target="_blank" style="display:inline-block;background:#2563eb;color:#fff;padding:0.4rem 0.8rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:0.85rem;margin-top:4px;">Track Order</a>
+        </div>
+        <?php endif; ?>
+
         <div class="items">
             <?php foreach ($items as $it): ?>
             <div class="item">
